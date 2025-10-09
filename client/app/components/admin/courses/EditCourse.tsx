@@ -23,7 +23,8 @@ const EditCourse: FC<Props> = ({ id }) => {
     { refetchOnMountOrArgChange: true }
   );
 
-  const editCourseData = data && data.courses.find((i: any) => i._id === id);
+  const editCourseData =
+    data && data.allCourses?.find((i: any) => i._id === id);
   console.log(editCourseData);
 
   useEffect(() => {
@@ -136,7 +137,7 @@ const EditCourse: FC<Props> = ({ id }) => {
     await editCourse({ id: editCourseData?._id, data });
   };
   return (
-    <div className="w-full flex min-h-screen">
+    <div className="w-full flex min-h-screen bg-[#0D1422]">
       <div className="w-[80%]">
         {active == 0 && (
           <CourseInformation

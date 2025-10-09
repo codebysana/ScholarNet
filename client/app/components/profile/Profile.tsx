@@ -30,15 +30,13 @@ const Profile: FC<Props> = ({ user }) => {
     await signOut();
   };
 
-  if (typeof window !== "undefined") {
-    window.addEventListener("scroll", () => {
-      if (window.scrollY > 80) {
-        setScroll(true);
-      } else {
-        setScroll(false);
-      }
-    });
-  }
+  useEffect(() => {
+    const handleScroll = () => {
+      setScroll(window.scrollY > 80);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     if (data) {
@@ -52,51 +50,104 @@ const Profile: FC<Props> = ({ user }) => {
   }, [data]);
 
   return (
-    <div className="w-full mx-auto flex gap-6 mt-20 mb-20">
-      <div
-        className={`w-[60px] md:w-[310px] h-[calc(100vh-80px)] dark:bg-slate-900 bg-white bg-opacity-90 border dark:border-white/10 border-black/10 rounded-md shadow-sm sticky ${
-          scroll ? "top-28" : "top-8"
-        }`}
-      >
-        <SideBarProfile
-          user={user}
-          active={active}
-          setActive={setActive}
-          avatar={avatar}
-          logoutHandler={logoutHandler}
-        />
-      </div>
-      <div className="w-full">
-        {active === 1 && (
-          <div className="w-full h-full bg-transparent">
-            <ProfileInfo user={user} avatar={avatar} />
-          </div>
-        )}
-        {active === 2 && (
-          <div className="w-full h-full bg-transparent">
-            <ChangePassword />
-          </div>
-        )}
-        {active === 3 && (
-          <div className="w-full pl-7 px-2 800px:px-10 800px:pl-8">
-            <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-2 lg:gap-[25px] xl:grid-cols-3 xl:gap-[35px]">
-              {courses &&
-                courses.map((item: any, index: number) => (
-                  <CourseCard
-                    item={item}
-                    key={index}
-                    user={user}
-                    isProfile={true}
-                  />
-                ))}
+    // <div className="w-full mx-auto flex gap-6 mt-20 mb-20">
+    //   <div
+    //     className={`w-[60px] md:w-[310px] h-[calc(100vh-80px)] dark:bg-slate-900 bg-white bg-opacity-90 border dark:border-white/10 border-black/10 rounded-md shadow-sm sticky ${
+    //       scroll ? "top-28" : "top-8"
+    //     }`}
+    //   >
+    //     <SideBarProfile
+    //       user={user}
+    //       active={active}
+    //       setActive={setActive}
+    //       avatar={avatar}
+    //       logoutHandler={logoutHandler}
+    //     />
+    //   </div>
+    //   <div className="w-full">
+    //     {active === 1 && (
+    //       <div className="w-full h-full bg-transparent">
+    //         <ProfileInfo user={user} avatar={avatar} />
+    //       </div>
+    //     )}
+    //     {active === 2 && (
+    //       <div className="w-full h-full bg-transparent">
+    //         <ChangePassword />
+    //       </div>
+    //     )}
+    //     {active === 3 && (
+    //       <div className="w-full pl-7 px-2 800px:px-10 800px:pl-8">
+    //         <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-2 lg:gap-[25px] xl:grid-cols-3 xl:gap-[35px]">
+    //           {courses &&
+    //             courses.map((item: any, index: number) => (
+    //               <CourseCard
+    //                 item={item}
+    //                 key={index}
+    //                 user={user}
+    //                 isProfile={true}
+    //               />
+    //             ))}
+    //         </div>
+    //         {courses.length === 0 && (
+    //           <h1 className="text-center text-[18px] font-Poppins">
+    //             You don't have any purchased yet
+    //           </h1>
+    //         )}
+    //       </div>
+    //     )}
+    //   </div>
+    // </div>
+    <div className="max-w-5xl mx-auto mt-16 mb-16 px-4">
+      <div className="flex gap-6 bg-white dark:bg-[#111A39] rounded-2xl shadow-lg overflow-hidden">
+        {/* Sidebar */}
+        <div
+          className={`w-[70px] md:w-[280px] h-[calc(100vh-80px)] text-[18px] font-[400] dark:bg-[#111A39] bg-white bg-opacity-90 border dark:border-white/10 border-black/10 rounded-md shadow-sm sticky ${
+            scroll ? "top-28" : "top-8"
+          }`}
+        >
+          <SideBarProfile
+            user={user}
+            active={active}
+            setActive={setActive}
+            avatar={avatar}
+            logoutHandler={logoutHandler}
+          />
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 p-6 mt-7">
+          {active === 1 && (
+            <div className="">
+              <ProfileInfo user={user} avatar={avatar} />
             </div>
-            {courses.length === 0 && (
-              <h1 className="text-center tex[18px] font-Poppins">
-                You don't have any purchased yet
-              </h1>
-            )}
-          </div>
-        )}
+          )}
+
+          {active === 2 && (
+            <div className="flex-1 p-6 ">
+              <ChangePassword />
+            </div>
+          )}
+
+          {active === 3 && (
+            <div className="w-full">
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                {courses?.map((item, index) => (
+                  <div
+                    key={index}
+                    className="transform transition-all hover:scale-[1.02] hover:shadow-md"
+                  >
+                    <CourseCard item={item} user={user} isProfile={true} />
+                  </div>
+                ))}
+              </div>
+              {courses.length === 0 && (
+                <h1 className="text-center text-[16px] font-Poppins text-gray-500 mt-8">
+                  You don’t have any purchased courses yet
+                </h1>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -32,7 +32,7 @@ router.put(
   isAuthenticated,
   updatePassword
 );
-router.put("/update-image", updateAccessToken, isAuthenticated, updateProfile);
+router.put("/update-avatar", updateAccessToken, isAuthenticated, updateProfile);
 
 // router.get(
 //   "/get-users",

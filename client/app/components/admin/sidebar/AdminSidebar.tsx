@@ -71,7 +71,7 @@ const AdminSidebar = () => {
       sx={{
         "& .pro-sidebar-inner": {
           background: `${
-            theme === "dark" ? "#111C43 !important" : "#fff !important"
+            theme === "dark" ? "#060b18 !important" : "#fff !important"
           }`,
         },
         "& .pro-icon-wrapper": {
@@ -99,7 +99,7 @@ const AdminSidebar = () => {
           color: `${theme !== "dark" && "#000"}`,
         },
       }}
-      className="!bg-white dark:bg-[#111C43]"
+      className="!bg-white dark:bg-[#060b18]"
     >
       <ProSidebar
         collapsed={isCollapsed}

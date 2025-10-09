@@ -97,78 +97,165 @@ const DashboardWidgets: FC<Props> = ({ open }) => {
     }
   }, [isLoading, ordersLoading, data, ordersData]);
   return (
-    <div className="mt-[30px] min-h-screen w-full max-w-7xl mx-auto px-4">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 py-6 bg-transparent mt-4 flex-1">
-          <UserAnalytics isDashboard={true} />
+    // <div className="mt-[30px] min-h-screen w-full max-w-7xl mx-auto px-4">
+    //   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    //     <div className="lg:col-span-2 py-6 bg-transparent mt-4 flex-1">
+    //       <UserAnalytics isDashboard={true} />
+    //     </div>
+
+    //     <div className="pt-[80px] pr-3">
+    //       <div className="dark:bg-[#111C43] rounded-sm shadow mb-8">
+    //         <div className="flex items-center p-5 justify-between">
+    //           <div className="">
+    //             <BiBorderLeft className="dark:text-[#45CBA0] text-[#000] text-[30px]" />
+    //             <h5 className="pt-2 font-Poppins dark:text-[#fff] text-black text-[20px]">
+    //               {ordersComparePercentage?.currentMonth}
+    //             </h5>
+    //             <h5 className="py-2 font-Poppins dark:text-[#45CBA0] text-black text-[20px] font-[400]">
+    //               Sales Obtained
+    //             </h5>
+    //           </div>
+    //           <div className="">
+    //             <CircularProgressWithLabel
+    //               value={ordersComparePercentage?.percentChange > 0 ? 100 : 0}
+    //               open={open}
+    //             />
+    //             <h5 className="text-center pt-4">
+    //               {ordersComparePercentage?.percentChange > 0
+    //                 ? "+" + ordersComparePercentage?.percentChange.toFixed(2)
+    //                 : "-" +
+    //                   ordersComparePercentage?.percentChange.toFixed(2)}{" "}
+    //               %
+    //             </h5>
+    //           </div>
+    //         </div>
+    //       </div>
+
+    //       <div className=" dark:bg-[#111C43] rounded-sm shadow my-8">
+    //         <div className="flex items-center p-5 justify-between">
+    //           <div className="">
+    //             <PiUsersFourLight className="dark:text-[#45CBA0] text-[#000] text-[30px]" />
+    //             <h5 className="pt-2 font-Poppins dark:text-[#fff] text-black text-[20px]">
+    //               {userComparePercentage?.currentMonth}
+    //             </h5>
+    //             <h5 className="py-2 font-Poppins dark:text-[#45CBA0] text-black text-[20px] font-[400]">
+    //               New Users
+    //             </h5>
+    //           </div>
+    //           <div className="">
+    //             <CircularProgressWithLabel
+    //               value={userComparePercentage?.percentChange > 0 ? 100 : 0}
+    //               open={open}
+    //             />
+    //             <h5 className="text-center pt-4">
+    //               {userComparePercentage?.percentChange > 0
+    //                 ? "+" + userComparePercentage?.percentChange.toFixed(2)
+    //                 : "-" +
+    //                   userComparePercentage?.percentChange.toFixed(2)}{" "}
+    //               %
+    //             </h5>
+    //           </div>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   </div>
+
+    //   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-[30px]">
+    //     <div className="lg:col-span-2 dark:bg-[#111c43] shadow-sm py-6 rounded-sm mx-5 mt-3 flex-1">
+    //       <OrderAnalytics isDashboard={true} />
+    //     </div>
+    //     <div className="dark:bg-[#fff] text-black shadow-sm rounded-sm mr-3 flex-1">
+    //       <h5 className="text-[20px] font-[400] font-Poppins p-3">
+    //         Recent Transactions
+    //       </h5>
+    //       <AllInvoices isDashboard={true} />
+    //     </div>
+    //   </div>
+    // </div>
+
+    <div className="mt-[120px] h-screen w-full max-w-5xl mx-auto px-4 space-y-8">
+      <h1 className="text-[20px] font-[500]">Learning Graphs</h1>
+      {/* Users Analytics + Stats */}
+      <div className="bg-[#111C43] rounded-2xl shadow-md p-6 flex flex-col lg:flex-row gap-6">
+        {/* Left: User Analytics */}
+        <div className="flex-[2] flex flex-col">
+          <div className="flex-1">
+            <UserAnalytics isDashboard={true} />
+          </div>
         </div>
 
-        <div className="pt-[80px] pr-3">
-          <div className="dark:bg-[#111C43] rounded-sm shadow mb-8">
-            <div className="flex items-center p-5 justify-between">
-              <div className="">
-                <BiBorderLeft className="dark:text-[#45CBA0] text-[#000] text-[30px]" />
-                <h5 className="pt-2 font-Poppins dark:text-[#fff] text-black text-[20px]">
-                  {ordersComparePercentage?.currentMonth}
-                </h5>
-                <h5 className="py-2 font-Poppins dark:text-[#45CBA0] text-black text-[20px] font-[400]">
-                  Sales Obtained
-                </h5>
-              </div>
-              <div className="">
-                <CircularProgressWithLabel
-                  value={ordersComparePercentage?.percentChange > 0 ? 100 : 0}
-                  open={open}
-                />
-                <h5 className="text-center pt-4">
-                  {ordersComparePercentage?.percentChange > 0
-                    ? "+" + ordersComparePercentage?.percentChange.toFixed(2)
-                    : "-" +
-                      ordersComparePercentage?.percentChange.toFixed(2)}{" "}
-                  %
-                </h5>
-              </div>
+        {/* Right: Sales + New Users */}
+        <div className="flex-[1] flex flex-col gap-3 justify-center">
+          {/* Sales Obtained */}
+          <div className="bg-[#0F172A] rounded-xl p-5 flex justify-between items-center">
+            <div>
+              <BiBorderLeft className="text-[#45CBA0] text-[28px]" />
+              <p className="mt-2 text-white text-[22px] font-semibold">
+                {ordersComparePercentage?.currentMonth}
+              </p>
+              <p className="text-[#45CBA0] text-[14px] font-medium">
+                Sales Obtained
+              </p>
+            </div>
+            <div className="text-center">
+              <CircularProgressWithLabel
+                value={ordersComparePercentage?.percentChange > 0 ? 100 : 0}
+                open={open}
+              />
+              <p className="pt-2 text-[#45CBA0] text-sm font-medium">
+                {ordersComparePercentage?.percentChange > 0
+                  ? "+" + ordersComparePercentage?.percentChange.toFixed(2)
+                  : "-" +
+                    ordersComparePercentage?.percentChange.toFixed(2)}{" "}
+                %
+              </p>
             </div>
           </div>
 
-          <div className=" dark:bg-[#111C43] rounded-sm shadow my-8">
-            <div className="flex items-center p-5 justify-between">
-              <div className="">
-                <PiUsersFourLight className="dark:text-[#45CBA0] text-[#000] text-[30px]" />
-                <h5 className="pt-2 font-Poppins dark:text-[#fff] text-black text-[20px]">
-                  {userComparePercentage?.currentMonth}
-                </h5>
-                <h5 className="py-2 font-Poppins dark:text-[#45CBA0] text-black text-[20px] font-[400]">
-                  New Users
-                </h5>
-              </div>
-              <div className="">
-                <CircularProgressWithLabel
-                  value={userComparePercentage?.percentChange > 0 ? 100 : 0}
-                  open={open}
-                />
-                <h5 className="text-center pt-4">
-                  {userComparePercentage?.percentChange > 0
-                    ? "+" + userComparePercentage?.percentChange.toFixed(2)
-                    : "-" +
-                      userComparePercentage?.percentChange.toFixed(2)}{" "}
-                  %
-                </h5>
-              </div>
+          {/* New Users */}
+          <div className="bg-[#0F172A] rounded-xl p-5 flex justify-between items-center">
+            <div>
+              <PiUsersFourLight className="text-[#45CBA0] text-[28px]" />
+              <p className="mt-2 text-white text-[22px] font-semibold">
+                {userComparePercentage?.currentMonth}
+              </p>
+              <p className="text-[#45CBA0] text-[14px] font-medium">
+                New Users
+              </p>
+            </div>
+            <div className="text-center">
+              <CircularProgressWithLabel
+                value={userComparePercentage?.percentChange > 0 ? 100 : 0}
+                open={open}
+              />
+              <p className="pt-2 text-[#45CBA0] text-sm font-medium">
+                {userComparePercentage?.percentChange > 0
+                  ? "+" + userComparePercentage?.percentChange.toFixed(2)
+                  : "-" + userComparePercentage?.percentChange.toFixed(2)}{" "}
+                %
+              </p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-[30px]">
-        <div className="lg:col-span-2 dark:bg-[#111c43] shadow-sm py-6 rounded-sm mx-5 mt-3 flex-1">
-          <OrderAnalytics isDashboard={true} />
+      {/* Orders Analytics + Recent Transactions */}
+      <div className="bg-[#111C43] rounded-2xl shadow-md p-6 flex flex-col lg:flex-row gap-6">
+        {/* Left: Order Analytics */}
+        <div className="flex-[2] flex flex-col">
+          <div className="flex-1">
+            <OrderAnalytics isDashboard={true} />
+          </div>
         </div>
-        <div className="dark:bg-[#fff] text-black shadow-sm rounded-sm mr-3 flex-1">
-          <h5 className="text-[20px] font-[400] font-Poppins p-3">
+
+        {/* Right: Recent Transactions */}
+        <div className="flex-[1] bg-[#0F172A] rounded-xl p-5 text-white flex flex-col">
+          <h2 className="text-[18px] font-semibold mb-4">
             Recent Transactions
-          </h5>
-          <AllInvoices isDashboard={true} />
+          </h2>
+          <div className="flex-1 overflow-y-auto">
+            <AllInvoices isDashboard={true} />
+          </div>
         </div>
       </div>
     </div>

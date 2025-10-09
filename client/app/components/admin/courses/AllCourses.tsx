@@ -11,6 +11,7 @@ import { styles } from "@/app/styles/style";
 import { useDeleteCourseMutation } from "@/redux/features/courses/coursesApi";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { useGetAllCoursesQuery } from "../../../../redux/features/courses/coursesApi";
 
 type Props = {};
 
@@ -18,11 +19,10 @@ const AllCourses = () => {
   const { theme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const [courseId, setCourseId] = useState("");
-  const {
-    isLoading,
-    data,
-    refetch,
-  } = useGetAllCoursesQuery({}, { refetchOnMountOrArgChange: true });
+  const { isLoading, data, refetch } = useGetAllCoursesQuery(
+    {},
+    { refetchOnMountOrArgChange: true }
+  );
   const [deleteCourse, { isSuccess, error }] = useDeleteCourseMutation({});
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
@@ -38,7 +38,10 @@ const AllCourses = () => {
         return (
           <>
             <Link href={`/admin/edit-course/${params.row.id}`}>
-              <AiFillEdit className="dark:text-white text-black" size={20} />
+              <AiFillEdit
+                className="text-white text-center hover:underline mr-5"
+                size={20}
+              />
             </Link>
           </>
         );
@@ -59,7 +62,7 @@ const AllCourses = () => {
               }}
             >
               <AiOutlineDelete
-                className="dark:text-white text-black"
+                className="text-white text-center hover:underline mr-5"
                 size={20}
               />
             </Button>
@@ -69,9 +72,11 @@ const AllCourses = () => {
     },
   ];
 
+  const rows: any = [];
+
   {
     data &&
-      data.courses.forEach((item: any) => {
+      data.allCourses.forEach((item: any) => {
         rows.push({
           id: item._id,
           title: item.name,
@@ -81,15 +86,16 @@ const AllCourses = () => {
         });
       });
   }
-  const rows: any = [
-    // {
-    //   id: "1234",
-    //   title: "React",
-    //   purchased: "30",
-    //   ratings: "5",
-    //   created_at: "01/01/17",
-    // },
-  ];
+
+  // const rows: any = [
+  //   // {
+  //   //   id: "1234",
+  //   //   title: "React",
+  //   //   purchased: "30",
+  //   //   ratings: "5",
+  //   //   created_at: "01/01/17",
+  //   // },
+  // ];
 
   useEffect(() => {
     if (isSuccess) {
@@ -111,7 +117,7 @@ const AllCourses = () => {
   };
 
   return (
-    <div className="mt-[120px]">
+    <div className="mt-[120px] h-screen bg-[#0D1421]">
       {isLoading ? (
         <Loader />
       ) : (
@@ -119,54 +125,98 @@ const AllCourses = () => {
           <Box
             m="40px 0 0 0"
             height="80vh"
+            width="90%"
+            mx="auto"
+            // sx={{
+            //   "& .MuiDataGrid-root": {
+            //     border: "none",
+            //     outline: "none",
+            //   },
+            //   "& .css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon": {
+            //     color: theme === "dark" ? "#fff" : "#000",
+            //   },
+            //   "& .MuiDataGrid-sortIcon": {
+            //     color: theme === "dark" ? "#fff" : "#000",
+            //   },
+            //   "& .MuiDataGrid-row": {
+            //     color: theme === "dark" ? "#fff" : "#000",
+            //     borderBottom:
+            //       theme === "dark"
+            //         ? "1px solid #ffffff30!important"
+            //         : "1px solid #ccc!important",
+            //   },
+            //   "& .MuiTablePagination-root": {
+            //     color: theme === "dark" ? "#fff" : "#000",
+            //   },
+            //   "& .MuiDataGrid-cell": {
+            //     borderBottom: "none",
+            //   },
+            //   "& .name-column--cell": {
+            //     color: theme === "dark" ? "#fff" : "#000",
+            //   },
+            //   "& .MuiDataGrid-columnHeaders": {
+            //     backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
+            //     borderBottom: "none",
+            //     color: theme === "dark" ? "#fff" : "#000",
+            //   },
+            //   "& .MuiDataGrid-virtualScroller": {
+            //     backgroundColor: theme === "dark" ? "#1F2A40" : "#F2F0F0",
+            //   },
+            //   "& .MuiDataGrid-footerContainer": {
+            //     color: theme === "dark" ? "#fff" : "#000",
+            //     borderTop: "none",
+            //     backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
+            //   },
+            //   "& .MuiCheckbox-root": {
+            //     color:
+            //       theme === "dark" ? "#b7ebde !important" : "#000 !important",
+            //     borderTop: "none",
+            //     backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
+            //   },
+            //   "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+            //     color: "#fff !important",
+            //   },
+            // }}
             sx={{
               "& .MuiDataGrid-root": {
                 border: "none",
                 outline: "none",
               },
-              "& .css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-sortIcon": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
               "& .MuiDataGrid-row": {
                 color: theme === "dark" ? "#fff" : "#000",
                 borderBottom:
                   theme === "dark"
-                    ? "1px solid #ffffff30!important"
-                    : "1px solid #ccc!important",
-              },
-              "& .MuiTablePagination-root": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-cell": {
-                borderBottom: "none",
-              },
-              "& .name-column--cell": {
-                color: theme === "dark" ? "#fff" : "#000",
+                    ? "1px solid #ffffff30 !important"
+                    : "1px solid #ccc !important",
+                "&:hover": {
+                  backgroundColor:
+                    theme === "dark"
+                      ? "rgba(255,255,255,0.05)" // very soft hover in dark
+                      : "rgba(0,0,0,0.04)", // minimal hover in light
+                },
               },
               "& .MuiDataGrid-columnHeaders": {
-                backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
+                backgroundColor: theme === "dark" ? "#e5e7eb" : "#f5f5f5",
                 borderBottom: "none",
-                color: theme === "dark" ? "#fff" : "#000",
+                color: "#000", // black headers always
+                fontWeight: 600,
+                fontSize: "14px",
               },
               "& .MuiDataGrid-virtualScroller": {
-                backgroundColor: theme === "dark" ? "#1F2A40" : "#F2F0F0",
+                backgroundColor: theme === "dark" ? "#0F172A" : "#F9FAFB",
               },
               "& .MuiDataGrid-footerContainer": {
                 color: theme === "dark" ? "#fff" : "#000",
                 borderTop: "none",
-                backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
+                backgroundColor: theme === "dark" ? "#111C43" : "#E5E7EB",
               },
               "& .MuiCheckbox-root": {
                 color:
-                  theme === "dark" ? "#b7ebde !important" : "#000 !important",
-                borderTop: "none",
-                backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
+                  theme === "dark" ? "#45CBA0 !important" : "#111 !important",
               },
               "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-                color: "#fff !important",
+                color:
+                  theme === "dark" ? "#45CBA0 !important" : "#111 !important",
               },
             }}
           >
@@ -184,15 +234,15 @@ const AllCourses = () => {
                 <h1 className={`${styles.title}`}>
                   Are you sure you want to delete this course
                 </h1>
-                <div className="flex w-full items-center justify-between mb-6 mt-5">
+                <div className="flex w-full items-center justify-between mt-5">
                   <div
-                    className={`${styles.button} !w-[120px] h-[30px] bg-[#57c7a3]`}
+                    className={`${styles.button} !w-[120px] h-[30px] text-white `}
                     onClick={() => setOpen(!open)}
                   >
                     Cancel
                   </div>
                   <div
-                    className={`${styles.button} !w-[120px] h-[30px] bg-[#d63f00]`}
+                    className={`${styles.button} !w-[120px] h-[30px] text-white`}
                     onClick={handleDelete}
                   ></div>
                 </div>
@@ -206,14 +256,3 @@ const AllCourses = () => {
 };
 
 export default AllCourses;
-
-
-function useGetAllCoursesQuery(arg0: {}, arg1: { refetchOnMountOrArgChange: boolean; }): { isLoading: any; data: any; refetch: any; } {
-  throw new Error("Function not implemented.");
-}
-// function useGetAllCoursesQuery(
-//   arg0: {},
-//   p0: { refetchOnMountOrArgChange: boolean }
-// ): { isLoading: any; data: any } {
-//   throw new Error("Function not implemented.");
-// }

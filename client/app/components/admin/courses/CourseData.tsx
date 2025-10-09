@@ -81,7 +81,7 @@ const CourseData: FC<Props> = ({
       {/* pre-requisites */}
       <div>
         <label htmlFor="email" className={`${styles.label} text-[20px]`}>
-          What are the pre-requisites for studentsin this course
+          What are the pre-requisites for students in this course
         </label>{" "}
         <br />
         {prerequisites.map((prerequisites: any, index: number) => (

@@ -37,7 +37,7 @@ const ChangePassword = () => {
         </h1>
       </div>
 
-      <div className="w-full">
+      <div className="w-full mt-10">
         <form
           onSubmit={passwordChangeHandler}
           aria-required

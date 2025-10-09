@@ -40,12 +40,13 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
     },
     password: {
       type: String,
+      required: [true, "Please enter a password"],
       minlength: [6, "Password must be atleast 6 characters"],
       select: false,
     },
     avatar: {
-      public_id: String,
-      url: String,
+      public_id: { type: String, required: true },
+      url: { type: String, required: true },
     },
     role: {
       type: String,
@@ -66,9 +67,8 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
 
 // hash password before saving
 userSchema.pre<IUser>("save", async function (next) {
-  if (!this.isModified("password")) {
-    next();
-  }
+  if (!this.isModified("password")) return next();
+
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });

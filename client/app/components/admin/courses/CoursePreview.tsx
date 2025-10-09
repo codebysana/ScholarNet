@@ -34,12 +34,14 @@ const CoursePreview: FC<Props> = ({
     handleCourseCreate();
   };
   return (
-    <div className="w-[90%] m-auto py-5 mb-5">
+    <div className="w-[75%] m-auto py-5 mb-5">
       <div className="w-full relative">
         <div className="w-full mt-10">
           <CoursePlayer
             title={courseData?.title}
-            videoUrl={courseData?.videoUrl}
+            videoUrl={
+              courseData?.demoURL || courseData?.courseData?.[0]?.videoUrl || ""
+            }
           />
         </div>
         <div className="flex items-center">
@@ -126,6 +128,12 @@ const CoursePreview: FC<Props> = ({
           <p className="text-[18px] mt-[20px] whitespace-pre-line w-full overflow-hidden">
             {courseData?.description}
           </p>
+          {/* ✅ categories here instead */}
+          {courseData?.categories && (
+            <p className="mt-2 text-gray-600">
+              Category: {courseData.categories}
+            </p>
+          )}
         </div>
         <br />
         <br />
@@ -149,5 +157,3 @@ const CoursePreview: FC<Props> = ({
 };
 
 export default CoursePreview;
-
-// API_SECRET = QZkhG4F5SpSohySJSxWhIP67auLNxH8CkGGcwrZ8eGGzq6aPOZ3ZOp8t143NUrAm

@@ -31,6 +31,8 @@ const SideBarProfile: FC<Props> = ({
         onClick={() => setActive(1)}
       >
         <Image
+          width={30}
+          height={30}
           src={
             user.avatar || avatar ? user.avatar.url || avatar : avatarDefault
           }
@@ -47,7 +49,7 @@ const SideBarProfile: FC<Props> = ({
         }`}
         onClick={() => setActive(2)}
       >
-        <RiLockPasswordLine size={20} className="dark:text-[#fff] text-black"  />
+        <RiLockPasswordLine size={20} className="dark:text-[#fff] text-black" />
         <h5 className="pl-2 800px:block hidden font-Poppins dark:text-white text-black">
           Change Password
         </h5>
@@ -71,7 +73,10 @@ const SideBarProfile: FC<Props> = ({
             active === 6 ? "dark:bg-slate-800 bg-white" : "bg-transparent"
           }`}
         >
-          <MdOutlineAdminPanelSettings size={20} className="dark:text-[#fff] text-black"  />
+          <MdOutlineAdminPanelSettings
+            size={20}
+            className="dark:text-[#fff] text-black"
+          />
           <h5 className="pl-2 800px:block hidden font-Poppins dark:text-white text-black">
             Admin Dashboard
           </h5>

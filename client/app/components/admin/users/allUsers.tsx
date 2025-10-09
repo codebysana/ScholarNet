@@ -134,7 +134,7 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
       });
   } else {
     data &&
-      data.users.forEach((item: any) => {
+      data?.users?.forEach((item: any) => {
         rows.push({
           id: item._id,
           name: item.name,
@@ -167,59 +167,103 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
           <Box
             m="40px 0 0 0"
             height="80vh"
+            width="90%"
+            mx="auto"
+            // sx={{
+            //   "& .MuiDataGrid-root": {
+            //     border: "none",
+            //     outline: "none",
+            //     width:"95%",
+            //     mx:"auto"
+            //   },
+            //   "& .css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon": {
+            //     color: theme === "dark" ? "#fff" : "#000",
+            //   },
+            //   "& .MuiDataGrid-sortIcon": {
+            //     color: theme === "dark" ? "#fff" : "#000",
+            //   },
+            //   "& .MuiDataGrid-row": {
+            //     color: theme === "dark" ? "#fff" : "#000",
+            //     borderBottom:
+            //       theme === "dark"
+            //         ? "1px solid #ffffff30!important"
+            //         : "1px solid #ccc!important",
+            //     "&:hover": {
+            //       backgroundColor: "transparent !important",
+            //     },
+            //   },
+            //   "& .MuiTablePagination-root": {
+            //     color: theme === "dark" ? "#fff" : "#000",
+            //   },
+            //   "& .MuiDataGrid-cell": {
+            //     borderBottom: "none",
+            //   },
+            //   "& .name-column--cell": {
+            //     color: theme === "dark" ? "#000" : "#000",
+            //   },
+            //   "& .MuiDataGrid-columnHeaders": {
+            //     backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
+            //     borderBottom: "none",
+            //     color: theme === "dark" ? "#000" : "#000",
+            //   },
+            //   "& .MuiDataGrid-virtualScroller": {
+            //     backgroundColor: theme === "dark" ? "#1F2A40" : "#F2F0F0",
+            //   },
+            //   "& .MuiDataGrid-footerContainer": {
+            //     color: theme === "dark" ? "#fff" : "#000",
+            //     borderTop: "none",
+            //     backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
+            //   },
+            //   "& .MuiCheckbox-root": {
+            //     color:
+            //       theme === "dark" ? "#b7ebde !important" : "#000 !important",
+            //     borderTop: "none",
+            //     backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
+            //   },
+            //   "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+            //     color: "#fff !important",
+            //   },
+            // }}
             sx={{
               "& .MuiDataGrid-root": {
                 border: "none",
                 outline: "none",
-                width:"95%",
-                mx:"auto"
-              },
-              "& .css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-sortIcon": {
-                color: theme === "dark" ? "#fff" : "#000",
               },
               "& .MuiDataGrid-row": {
                 color: theme === "dark" ? "#fff" : "#000",
                 borderBottom:
                   theme === "dark"
-                    ? "1px solid #ffffff30!important"
-                    : "1px solid #ccc!important",
+                    ? "1px solid #ffffff30 !important"
+                    : "1px solid #ccc !important",
                 "&:hover": {
-                  backgroundColor: "transparent !important",
+                  backgroundColor:
+                    theme === "dark"
+                      ? "rgba(255,255,255,0.05)" // very soft hover in dark
+                      : "rgba(0,0,0,0.04)", // minimal hover in light
                 },
               },
-              "& .MuiTablePagination-root": {
-                color: theme === "dark" ? "#fff" : "#000",
-              },
-              "& .MuiDataGrid-cell": {
-                borderBottom: "none",
-              },
-              "& .name-column--cell": {
-                color: theme === "dark" ? "#000" : "#000",
-              },
               "& .MuiDataGrid-columnHeaders": {
-                backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
+                backgroundColor: theme === "dark" ? "#e5e7eb" : "#f5f5f5",
                 borderBottom: "none",
-                color: theme === "dark" ? "#000" : "#000",
+                color: "#000", // black headers always
+                fontWeight: 600,
+                fontSize: "14px",
               },
               "& .MuiDataGrid-virtualScroller": {
-                backgroundColor: theme === "dark" ? "#1F2A40" : "#F2F0F0",
+                backgroundColor: theme === "dark" ? "#0F172A" : "#F9FAFB",
               },
               "& .MuiDataGrid-footerContainer": {
                 color: theme === "dark" ? "#fff" : "#000",
                 borderTop: "none",
-                backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
+                backgroundColor: theme === "dark" ? "#111C43" : "#E5E7EB",
               },
               "& .MuiCheckbox-root": {
                 color:
-                  theme === "dark" ? "#b7ebde !important" : "#000 !important",
-                borderTop: "none",
-                backgroundColor: theme === "dark" ? "#3e4396" : "#A4A9FC",
+                  theme === "dark" ? "#45CBA0 !important" : "#111 !important",
               },
               "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-                color: "#fff !important",
+                color:
+                  theme === "dark" ? "#45CBA0 !important" : "#111 !important",
               },
             }}
           >

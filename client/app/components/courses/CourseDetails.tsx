@@ -43,7 +43,7 @@ const CourseDetails = ({
   const discountPercentagePrice = discountPercentage.toFixed(0);
 
   const isPurchased =
-    user && user?.courses?.find((item: any) => item._id === data._id);
+    user && user?.allCourses?.find((item: any) => item._id === data._id);
 
   const handleOrder = (e: any) => {
     if (user) {

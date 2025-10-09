@@ -19,7 +19,7 @@ const page: FC<Props> = (props) => {
     <div className="min-h-screen">
       <Protected>
         <Heading
-          title={`${user?.name} Profile - LMS`}
+          title={`${user?.name} Profile - ScholarNet`}
           description="Mentora is a platform where students can enroll and learn courses from international teachers."
           keywords="Programming, MERN, Redux Toolkit, Machine Lerning"
         />

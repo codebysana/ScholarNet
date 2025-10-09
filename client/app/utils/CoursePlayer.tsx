@@ -38,7 +38,7 @@ const CoursePlayer: FC<Props> = ({ videoUrl }) => {
             videoData?.otp
           }&playbackInfo=${encodeURIComponent(
             videoData.playbackInfo
-          )}&player=zBHKD73dUAMQlk0L`}
+          )}&player=TA2IuGFVcMGAfalY`}
           style={{
             border: 0,
             width: "100%",
