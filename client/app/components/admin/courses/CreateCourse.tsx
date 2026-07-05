@@ -34,7 +34,7 @@ const CreateCourse = () => {
     estimatedPrice: "",
     tags: "",
     level: "",
-    categories: [] as string[],
+    categories: "",
     demoURL: "",
     thumbnail: "",
   });
@@ -191,11 +191,6 @@ const CreateCourse = () => {
       courseInfo.categories.trim() !== ""
     ) {
       categoryValue = courseInfo.categories.trim(); // ✅ plain string
-    } else if (typeof courseInfo.categories === "string") {
-      categoryValue = courseInfo.categories
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean);
     }
 
     return {
