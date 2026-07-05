@@ -148,7 +148,7 @@ const AllInvoices = ({ isDashboard }: Props) => {
                 color: theme === "dark" ? "#000" : "#000",
               },
               "& .MuiDataGrid-virtualScroller": {
-                backgroundColor: theme === "dark" ? "#1f2a40" : "#f2f0f0",
+                backgroundColor: theme === "dark" ? "#e9eaec" : "#f2f0f0",
               },
               "& .MuiDataGrid-footerContainer": {
                 color: theme === "dark" ? "#fff" : "#000",

@@ -189,11 +189,11 @@ const DashboardWidgets: FC<Props> = ({ open }) => {
           {/* Sales Obtained */}
           <div className="bg-[#0F172A] rounded-xl p-5 flex justify-between items-center">
             <div>
-              <BiBorderLeft className="text-[#45CBA0] text-[28px]" />
+              <BiBorderLeft className="text-[#01b19a] text-[28px]" />
               <p className="mt-2 text-white text-[22px] font-semibold">
                 {ordersComparePercentage?.currentMonth}
               </p>
-              <p className="text-[#45CBA0] text-[14px] font-medium">
+              <p className="text-[#01b19a] text-[14px] font-medium">
                 Sales Obtained
               </p>
             </div>
@@ -202,7 +202,7 @@ const DashboardWidgets: FC<Props> = ({ open }) => {
                 value={ordersComparePercentage?.percentChange > 0 ? 100 : 0}
                 open={open}
               />
-              <p className="pt-2 text-[#45CBA0] text-sm font-medium">
+              <p className="pt-2 text-[#01b19a] text-sm font-medium">
                 {ordersComparePercentage?.percentChange > 0
                   ? "+" + ordersComparePercentage?.percentChange.toFixed(2)
                   : "-" +
@@ -215,11 +215,11 @@ const DashboardWidgets: FC<Props> = ({ open }) => {
           {/* New Users */}
           <div className="bg-[#0F172A] rounded-xl p-5 flex justify-between items-center">
             <div>
-              <PiUsersFourLight className="text-[#45CBA0] text-[28px]" />
+              <PiUsersFourLight className="text-[#01b19a] text-[28px]" />
               <p className="mt-2 text-white text-[22px] font-semibold">
                 {userComparePercentage?.currentMonth}
               </p>
-              <p className="text-[#45CBA0] text-[14px] font-medium">
+              <p className="text-[#01b19a] text-[14px] font-medium">
                 New Users
               </p>
             </div>
@@ -228,7 +228,7 @@ const DashboardWidgets: FC<Props> = ({ open }) => {
                 value={userComparePercentage?.percentChange > 0 ? 100 : 0}
                 open={open}
               />
-              <p className="pt-2 text-[#45CBA0] text-sm font-medium">
+              <p className="pt-2 text-[#01b19a] text-sm font-medium">
                 {userComparePercentage?.percentChange > 0
                   ? "+" + userComparePercentage?.percentChange.toFixed(2)
                   : "-" + userComparePercentage?.percentChange.toFixed(2)}{" "}
