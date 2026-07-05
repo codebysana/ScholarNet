@@ -38,7 +38,7 @@ const page = () => {
       );
     }
   }, [data, category, search]);
-  const categories = categoriesData?.layout.categories;
+  const categories = categoriesData?.layout?.categories;
   return (
     <div>
       {isLoading ? (
