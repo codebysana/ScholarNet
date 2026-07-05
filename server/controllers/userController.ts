@@ -18,6 +18,7 @@ import {
   updateUserRoleService,
 } from "../services/userService";
 import cloudinary from "cloudinary";
+
 require("dotenv").config();
 // import {activation} from "../mails/activationMail";
 
@@ -33,6 +34,7 @@ export const registerUser = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { name, email, password } = req.body;
+      console.log("Request Body:", req.body);
       const isEmailExist = await userModel.findOne({ email });
       if (isEmailExist) {
         return next(new ErrorHandler("Email already exist", 400));
@@ -115,15 +117,33 @@ export const activateUser = catchAsyncError(
         return next(new ErrorHandler("Email already exist", 400));
       }
 
-      const user = await userModel.create({
+      console.log("Creating user with:");
+      console.log({
         name,
         email,
         password,
       });
 
-      res.status(200).json({
-        success: true,
-      });
+     try {
+  const user = await userModel.create({
+    name,
+    email,
+    password,
+    avatar: {
+      public_id: "default",
+      url: "https://dummyimage.com/150x150",
+    },
+    isVerified: true,
+  });
+
+  return res.status(200).json({
+    success: true,
+    user,
+  });
+} catch (err) {
+  console.error("CREATE USER ERROR:", err);
+  return next(err);
+}
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
@@ -140,11 +160,31 @@ export const userLogin = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, password } = req.body as ILoginRequest;
+      console.log("RAW req.body:", req.body);
+      console.log("email value:", JSON.stringify(email));
+      console.log("email type:", typeof email);
+      console.log("password value:", JSON.stringify(password));
+      console.log("password type:", typeof password);
+
       if (!email || !password) {
         return next(new ErrorHandler("Please enter email and password", 400));
       }
 
-      const user = await userModel.findOne({ email }).select("+password");
+      const totalUsers = await userModel.countDocuments();
+      console.log("Total users in DB:", totalUsers);
+
+      const allEmails = await userModel.find().select("email");
+      console.log(
+        "All emails in DB:",
+        allEmails.map((u) => u.email),
+      );
+
+      const user = await userModel
+        .findOne({ email: email.toLowerCase().trim() })
+        .select("+password");
+         console.log("Found user:", user?.email);
+         console.log("Stored hash:", user?.password);
+         console.log("Password match:", await user?.comparePassword(password));
       if (!user) {
         return next(new ErrorHandler("Invalid email or password", 400));
       }
@@ -168,7 +208,7 @@ export const userLogout = catchAsyncError(
       res.cookie("access_token", "", { maxAge: 1 });
       res.cookie("refresh_token", "", { maxAge: 1 });
 
-      const userId = req.user?._id || "";
+      const userId = req.user?._id as any || "";
       redis.del(userId);
 
       res.status(200).json({
@@ -253,6 +293,9 @@ export const getUserInfo = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user?._id;
+      if (!userId || typeof userId !== "string") {
+        return next(new ErrorHandler("User ID missing or invalid", 400));
+      }
       getUserId(userId, res);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
@@ -305,7 +348,7 @@ export const updateUser = catchAsyncError(
         user.name = name;
       }
       await user?.save();
-      await redis.set(userId, JSON.stringify(user));
+      await redis.set(userId as string, JSON.stringify(user));
       res.status(201).json({
         success: true,
         user,
@@ -346,7 +389,7 @@ export const updatePassword = catchAsyncError(
       user.password = newPass;
       await user.save();
 
-      await redis.set(req.user?._id, JSON.stringify(user));
+      await redis.set(req.user?._id as string, JSON.stringify(user));
 
       res.status(201).json({
         success: true,
@@ -397,7 +440,7 @@ export const updateProfile = catchAsyncError(
         }
       }
       await user?.save();
-      await redis.set(userId, JSON.stringify(user));
+      await redis.set(userId as string, JSON.stringify(user));
       res.status(200).json({
         success: true,
         user,
@@ -425,7 +468,8 @@ export const updateUserRole = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id, role } = req.body;
-      await updateUserRoleService(req, res, id, role);
+      // cast req to any to satisfy service's expected Request type
+      await updateUserRoleService(req as any, res, id, role);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }

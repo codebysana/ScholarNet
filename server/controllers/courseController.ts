@@ -5,7 +5,7 @@ import cloudinary from "cloudinary";
 import { createCourse, getAllCoursesService } from "../services/courseService";
 import courseModel from "../models/courseModel";
 import { redis } from "../utils/redis";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import ejs from "ejs";
 import path from "node:path";
 import sendMail from "../utils/sendMail";
@@ -138,7 +138,7 @@ export const getCourseByUser = catchAsyncError(
       const userCourseList = req.user?.courses;
       const courseId = req.params.id;
       const courseExist = userCourseList?.find(
-        (course: any) => course._id.toString() === courseId
+        (course: any) => (course._id as Types.ObjectId).toString() === courseId
       );
       if (!courseExist) {
         return next(
@@ -323,7 +323,7 @@ export const addReview = catchAsyncError(
       const courseId = req.params.id;
       //check if course id exists in courseList based on _id
       const courseExists = courseList?.some(
-        (course: any) => course._id.toString() === courseId.toString()
+        (course: any) => (course._id as Types.ObjectId).toString() === courseId.toString()
       );
 
       if (!courseExists) {

@@ -10,6 +10,7 @@ import orderModel, { IOrder } from "../models/orderModel";
 import notificationModel from "../models/notificationModel";
 import { getAllOrderService, newOrder } from "../services/orderService";
 import { redis } from "../utils/redis";
+import { Types } from "mongoose";
 require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
@@ -31,7 +32,7 @@ export const createOrder = catchAsyncError(
       }
       const user = await userModel.findById(req.user?._id);
       const courseUserExist = user?.courses.some(
-        (course: any) => course._id.toString() === courseId
+        (course: any) => (course._id as Types.ObjectId).toString() === courseId
       );
       if (courseUserExist) {
         return next(
@@ -53,7 +54,7 @@ export const createOrder = catchAsyncError(
 
       const mailData = {
         order: {
-          _id: course._id.toString().slice(0, 6),
+          _id: (course._id as Types.ObjectId).toString().slice(0, 6),
           name: course.name,
           price: course.price,
           date: new Date().toLocaleDateString("en-US", {
@@ -81,9 +82,9 @@ export const createOrder = catchAsyncError(
       } catch (error: any) {
         return next(new ErrorHandler(error.message, 500));
       }
-      user?.courses.push(course?._id);
+      user?.courses.push({ courseId: course?._id as Types.ObjectId } as any);
 
-      await redis.set(req.user?._id, JSON.stringify(user));
+      await redis.set((req.user?._id as Types.ObjectId).toString(), JSON.stringify(user));
 
       await user?.save();
 
