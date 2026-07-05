@@ -1,4 +1,4 @@
-import { NextFunction } from "express";
+import { Response } from "express";
 import userModel from "../models/userModel";
 import { redis } from "../utils/redis";
 
