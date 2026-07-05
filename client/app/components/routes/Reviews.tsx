@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { styles } from "@/app/styles/style";
 import Image from "next/image";
-import ReviewCard from "../review/ReviewCard";
+import ReviewCard from "../Review/ReviewCard";
 
 type Props = {};
 export const reviews = [
