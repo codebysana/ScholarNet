@@ -66,7 +66,7 @@ const login: FC<Props> = ({ setRoute, setOpen, refetch }) => {
           id="email"
           type="email"
           placeholder="example@gmail.com"
-          name=""
+          name="email"
           value={values.email}
           onChange={handleChange}
           className={`${errors.email && touched.email && "border-red-500"} ${
@@ -104,8 +104,8 @@ const login: FC<Props> = ({ setRoute, setOpen, refetch }) => {
               onClick={() => setShow(false)}
             />
           )}
-          {errors.email && touched.email && (
-            <span className="text-red-500 pt-2 block">{errors.email}</span>
+          {errors.password && touched.password && (
+            <span className="text-red-500 pt-2 block">{errors.password}</span>
           )}
         </div>
         <div className="w-full mt-5">

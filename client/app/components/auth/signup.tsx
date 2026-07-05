@@ -69,7 +69,7 @@ const signup: FC<Props> = ({ setRoute }) => {
             id="name"
             type="text"
             placeholder="Enter your name"
-            name=""
+            name="name"
             value={values.name}
             onChange={handleChange}
             className={`${errors.name && touched.name && "border-red-500"} ${
@@ -87,7 +87,7 @@ const signup: FC<Props> = ({ setRoute }) => {
           id="email"
           type="email"
           placeholder="example@gmail.com"
-          name=""
+          name="email"
           value={values.email}
           onChange={handleChange}
           className={`${errors.email && touched.email && "border-red-500"} ${
@@ -126,8 +126,8 @@ const signup: FC<Props> = ({ setRoute }) => {
             />
           )}
         </div>
-        {errors.email && touched.email && (
-          <span className="text-red-500 pt-2 block">{errors.email}</span>
+        {errors.password && touched.password && (
+          <span className="text-red-500 pt-2 block">{errors.password}</span>
         )}
         <div className="w-full mt-5">
           <input type="submit" value="Sign Up" className={`${styles.button}`} />
