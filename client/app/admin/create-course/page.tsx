@@ -6,7 +6,7 @@ import CreateCourse from "../../components/admin/courses/CreateCourse";
 import DashboardHeader from "../../components/admin/DashboardHeader";
 // import AdminProtected from "@/app/hooks/adminProtected";
 
-const page = () => {
+const Page = () => {
   return (
     <div>
       {/* <AdminProtected> */}
@@ -29,4 +29,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

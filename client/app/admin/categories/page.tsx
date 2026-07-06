@@ -6,9 +6,7 @@ import AdminSidebar from "@/app/components/admin/sidebar/AdminSidebar";
 import AdminProtected from "@/app/hooks/adminProtected";
 import EditCategories from "@/app/components/admin/customization/EditCategories";
 
-type Props = {};
-
-const page = () => {
+const Page = () => {
   return (
     <div>
       <AdminProtected>
@@ -31,4 +29,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

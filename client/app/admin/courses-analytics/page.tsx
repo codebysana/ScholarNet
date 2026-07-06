@@ -6,7 +6,7 @@ import DashboardHeader from "../../components/admin/DashboardHeader";
 import AdminSidebar from "../../components/admin/sidebar/AdminSidebar";
 import CourseAnalytics from "../../components/admin/analytics/CourseAnalytics";
 
-const page = () => {
+const Page = () => {
   return (
     <div>
       <AdminProtected>
@@ -29,4 +29,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

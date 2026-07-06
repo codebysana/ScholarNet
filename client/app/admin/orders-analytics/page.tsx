@@ -5,10 +5,9 @@ import AdminSidebar from "@/app/components/admin/sidebar/AdminSidebar";
 import DashboardHeader from "@/app/components/admin/DashboardHeader";
 import OrderAnalytics from "@/app/components/admin/analytics/OrderAnalytics";
 
-type Props = {};
-
-const page = ({ params }: any) => {
+const Page = ({ params }: { params: { id?: string } }) => {
   const id = params?.id;
+  console.log("id", id);
   return (
     <div>
       <Heading
@@ -29,4 +28,4 @@ const page = ({ params }: any) => {
   );
 };
 
-export default page;
+export default Page;

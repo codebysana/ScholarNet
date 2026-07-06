@@ -5,9 +5,7 @@ import Heading from "../../../utils/Heading";
 import DashboardHeader from "../../../components/admin/DashboardHeader";
 import EditCourse from "../../../components/admin/courses/EditCourse";
 
-type Props = {};
-
-const page = ({ params }: any) => {
+const Page = ({ params }: { params: { id: string } }) => {
   const id = params?.id;
   return (
     <div>
@@ -30,4 +28,4 @@ const page = ({ params }: any) => {
   );
 };
 
-export default page;
+export default Page;

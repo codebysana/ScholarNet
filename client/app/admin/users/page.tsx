@@ -4,11 +4,9 @@ import Heading from "@/app/utils/Heading";
 import DashboardHero from "@/app/components/admin/DashboardHero";
 import AdminSidebar from "@/app/components/admin/sidebar/AdminSidebar";
 import AdminProtected from "@/app/hooks/adminProtected";
-import AllUsers from "../../components/admin/users/AllUsers";
+import AllUsers from "@/app/components/admin/users/AllUsers";
 
-type Props = {};
-
-const page = () => {
+const Page = () => {
   return (
     <div>
       <AdminProtected>
@@ -23,7 +21,7 @@ const page = () => {
           </div>
           <div className="w-[85%]">
             <DashboardHero />
-            <AllUsers />
+            <AllUsers isTeam={false} />
           </div>
         </div>
       </AdminProtected>
@@ -31,4 +29,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
