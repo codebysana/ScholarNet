@@ -1,6 +1,7 @@
 "use client";
 import "./globals.css";
-import React, { FC, useEffect } from "react";
+
+import React, { useEffect } from "react";
 import { Poppins } from "next/font/google";
 import { Hind } from "next/font/google";
 import { ThemeProvider } from "./utils/theme-provider";

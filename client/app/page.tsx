@@ -12,9 +12,7 @@ import FAQS from "./components/faqs/FAQs";
 import Footer from "./components/Footer"
 // import "../globals.css"
 
-interface Props {}
-
-const Page: FC<Props> = (props) => {
+const Page: FC = () => {
   const [open, setOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(0);
   const [route, setRoute] = useState("Login");
