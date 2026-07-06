@@ -1,7 +1,15 @@
 import Ratings from "@/app/utils/Ratings";
 import Image from "next/image";
+type ReviewItem = {
+  avatar: string;
+  name: string;
+  profession?: string;
+  comment?: string;
+  rating?: number;
+};
+
 type Props = {
-  item: any;
+  item: ReviewItem;
 };
 
 const ReviewCard = (props: Props) => {
@@ -24,7 +32,7 @@ const ReviewCard = (props: Props) => {
               {props.item.profession}
             </h6>
           </div>
-          <Ratings rating={5} />
+          <Ratings rating={props.item.rating ?? 5} />
         </div>
         {/* for mobile */}
         <div className="800px:hidden justify-between w-full flex flex-col">
@@ -36,7 +44,7 @@ const ReviewCard = (props: Props) => {
               {props.item.profession}
             </h6>
           </div>
-          <Ratings rating={5} />
+          <Ratings rating={props.item.rating ?? 5} />
         </div>
       </div>
       <p className="pt-2 px-2 font-Poppins text-black dark:text-white">

@@ -8,22 +8,50 @@ import ChangePassword from "./ChangePassword";
 import CourseCard from "../courses/CourseCard";
 import { useGetUsersAllCoursesQuery } from "@/redux/features/courses/coursesApi";
 
+type UserCourse = {
+  _id: string;
+};
+
+type User = {
+  courses: UserCourse[];
+  name?: string;
+  email?: string;
+  avatar?: { url?: string } | string | null;
+  role?: string;
+  [key: string]: unknown;
+};
+
+type Course = {
+  _id: string;
+  name: string;
+  ratings: number;
+  purchased: number;
+  price: number;
+  estimatedPrice: number;
+  courseData: unknown[];
+  thumbnail: {
+    url: string;
+  }
+  [key: string]: unknown;
+};
+
 type Props = {
-  user: any;
+  user: User;
 };
 
 const Profile: FC<Props> = ({ user }) => {
   const [scroll, setScroll] = useState(false);
   const [active, setActive] = useState(1);
-  const [avatar, setAvatar] = useState(null);
+  const [avatar] = useState<string | null>(null);
   const [logout, setLogout] = useState(false);
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState<Course[]>([]);
 
   const {} = useLogoutQuery(undefined, {
     skip: !logout ? true : false,
   });
 
-  const { data, isLoading } = useGetUsersAllCoursesQuery(undefined, {});
+  const queryResult = useGetUsersAllCoursesQuery(undefined, {});
+  const data = queryResult.data as { courses: Course[] } | undefined;
 
   const logoutHandler = async () => {
     setLogout(true);
@@ -39,15 +67,15 @@ const Profile: FC<Props> = ({ user }) => {
   }, []);
 
   useEffect(() => {
-    if (data) {
+    if (data && Array.isArray(data.courses)) {
       const filteredCourses = user.courses
-        .map((userCourse: any) =>
-          data.courses.find((course: any) => course._id === userCourse._id)
+        .map((userCourse) =>
+          data.courses.find((course: Course) => course._id === userCourse._id)
         )
-        .filter((course: any) => course !== undefined);
+        .filter((course): course is Course => course !== undefined);
       setCourses(filteredCourses);
     }
-  }, [data]);
+  }, [data, user]);
 
   return (
     // <div className="w-full mx-auto flex gap-6 mt-20 mb-20">
@@ -136,7 +164,7 @@ const Profile: FC<Props> = ({ user }) => {
                     key={index}
                     className="transform transition-all hover:scale-[1.02] hover:shadow-md"
                   >
-                    <CourseCard item={item} user={user} isProfile={true} />
+                    <CourseCard item={item} isProfile={true} />
                   </div>
                 ))}
               </div>

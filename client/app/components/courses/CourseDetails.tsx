@@ -1,24 +1,36 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { format } from "timeago.js";
-import { useSelector } from "react-redux";
 import Ratings from "@/app/utils/Ratings";
 import { styles } from "@/app/styles/style";
 import CoursePlayer from "@/app/utils/CoursePlayer";
 import { IoCheckmarkDoneOutline, IoCloseOutline } from "react-icons/io5";
 import CourseContentList from "../courses/CourseContentList";
-import Elements from "@stripe/react-stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "../payment/CheckoutForm";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Image from "next/image";
 import { VscVerifiedFilled } from "react-icons/vsc";
+import { Stripe } from "@stripe/stripe-js";
+import { User, Benefit, Course, Prerequisite, Review, ReviewReply } from "@/app/types/course";
+
+export interface CourseContent {
+  _id: string;
+  title: string;
+  videoSection: string;
+  videoDuration: number;
+  description: string;
+  videoUrl: string;
+  links: Link[];
+}
+
 
 type Props = {
-  data: any;
-  stripePromise: any;
+  data: Course & Record<string, any>;
+  stripePromise: Promise<Stripe | null>;
   clientSecret: string;
-  setRoute: any;
-  setOpen: any;
+  setRoute: React.Dispatch<React.SetStateAction<string>>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const CourseDetails = ({
@@ -28,7 +40,7 @@ const CourseDetails = ({
   setRoute,
   setOpen: openAuthModel,
 }: Props) => {
-  const [user, setUser] = useState<any>();
+  const [user, setUser] = useState<User | null>(null);
   const { data: userData } = useLoadUserQuery(undefined, {});
   // const user = userData?.user;
   const [open, setOpen] = useState(false);
@@ -43,9 +55,9 @@ const CourseDetails = ({
   const discountPercentagePrice = discountPercentage.toFixed(0);
 
   const isPurchased =
-    user && user?.allCourses?.find((item: any) => item._id === data._id);
+    user && user?.allCourses?.find((item) => item._id === data._id);
 
-  const handleOrder = (e: any) => {
+  const handleOrder = () => {
     if (user) {
       setOpen(true);
     } else {
@@ -77,7 +89,7 @@ const CourseDetails = ({
               What you will learn from this course
             </h1>
             <div className="">
-              {data.benefits?.map((item: any, index: number) => (
+              {data.benefits?.map((item: Benefit, index: number) => (
                 <div
                   className="w-full flex 800px:items-center py-2"
                   key={index}
@@ -99,7 +111,7 @@ const CourseDetails = ({
             <h1 className="text-[25px] font-Poppins font-[600] text-black dark:text-white">
               What are the prerequisites to starting this course?
             </h1>
-            {data.prerequisites?.map((item: any, index: number) => (
+            {data.prerequisites?.map((item: Prerequisite, index: number) => (
               <div className="w-full flex 800px:items-center py-2" key={index}>
                 <div className="w-[15px] mr-1">
                   <IoCheckmarkDoneOutline
@@ -142,7 +154,7 @@ const CourseDetails = ({
                 </div>
                 <br />
                 {(data?.reviews && [...data.reviews].reverse()).map(
-                  (item: any, index: number) => (
+                  (item: Review, index: number) => (
                     <div className="w-full pb-4" key={index}>
                       <div className="flex">
                         <div className="w-[50px] h-[50px]">
@@ -175,11 +187,11 @@ const CourseDetails = ({
                           <Ratings rating={item.rating} />
                         </div>
                       </div>
-                      {item.commentReplies.map((i: any, index: number) => {
-                        <div className="w-full flex 800px:ml-16 my-5">
+                      {item.commentReplies.map((reply: ReviewReply) => (
+                        <div className="w-full flex 800px:ml-16 my-5" key={reply._id}>
                           <div className="w-[50px] h-[50px]">
                             <Image
-                              src={i.user.avatar ? i.user.avatar.url : ""}
+                              src={reply.user.avatar ? reply.user.avatar.url : ""}
                               width={50}
                               height={50}
                               alt=""
@@ -188,16 +200,16 @@ const CourseDetails = ({
                           </div>
                           <div className="pl-2">
                             <div className="flex items-center">
-                              <h5 className="text-[20px]">{i.user.name}</h5>
+                              <h5 className="text-[20px]">{reply.user.name}</h5>
                               <VscVerifiedFilled className="text-[#0095f6] ml-2 text-[20px]" />
                             </div>
-                            <p>{i.comment}</p>
+                            <p>{reply.comment}</p>
                             <small className="text-[#ffffff83]">
-                              {format(i.createdAt)}
+                              {format(reply.createdAt)}
                             </small>
                           </div>
-                        </div>;
-                      })}
+                        </div>
+                      ))}
                     </div>
                   )
                 )}
@@ -206,7 +218,7 @@ const CourseDetails = ({
           </div>
           <div className="w-full 800px:w-[35%] relative">
             <div className="sticky top-[100px] left-0 z-50 w-full">
-              <CoursePlayer videoUrl={data?.demoUrl} title={data?.title} />
+              <CoursePlayer videoUrl={data?.demoUrl} title={data?.name} />
               <div className="flex items-center">
                 <h1 className="pt-5 text-[25px] text-black dark:text-white">
                   {data.price === 0 ? "Free" : data.price + "$"}
@@ -264,7 +276,7 @@ const CourseDetails = ({
                 />
               </div>
               <div className="w-full">
-                {stripePromise && clientSecret && (
+                {stripePromise && clientSecret && user && (
                   <Elements stripe={stripePromise} options={{ clientSecret }}>
                     <CheckoutForm setOpen={setOpen} data={data} user={user} />
                   </Elements>

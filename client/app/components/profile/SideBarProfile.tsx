@@ -1,18 +1,31 @@
 import Image from "next/image";
 import React, { FC } from "react";
-import avatarDefault from "../../../public/assets/avatar.jpg";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { SiCoursera } from "react-icons/si";
 import { AiOutlineLogout } from "react-icons/ai";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import Link from "next/link";
+import avatarIcon from "../../../public/assets/avatar.jpg";
+
+type UserCourse = {
+  _id: string;
+};
+
+type User = {
+  courses: UserCourse[];
+  name?: string;
+  email?: string;
+  avatar?: { url?: string } | string | null;
+  role?: string;
+  [key: string]: unknown;
+};
 
 type Props = {
-  user: any;
+  user: User;
   active: number;
   avatar: string | null;
   setActive: (active: number) => void;
-  logoutHandler: any;
+  logoutHandler: () => void;
 };
 
 const SideBarProfile: FC<Props> = ({
@@ -34,7 +47,9 @@ const SideBarProfile: FC<Props> = ({
           width={30}
           height={30}
           src={
-            user.avatar || avatar ? user.avatar.url || avatar : avatarDefault
+            typeof user.avatar === "string"
+              ? user.avatar
+              : user.avatar?.url || avatar || avatarIcon
           }
           alt=""
           className="w-[20px] h-[20px] 600px:w-[30px] 800px:h-[20px] cursor-pointer rounded-full"

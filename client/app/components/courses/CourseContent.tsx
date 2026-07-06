@@ -5,11 +5,14 @@ import CourseContentMedia from "./CourseContentMedia";
 import { useGetCourseContentQuery } from "@/redux/features/courses/coursesApi";
 import Header from "../Header";
 import CourseContentList from "./CourseContentList";
-
-type Props = {
-  id: string;
-  user: any;
-};
+import {
+  User,
+  CourseContentResponse,
+} from "@/app/types/course";
+ type Props = {
+   id: string;
+   user: User;
+ };
 
 const CourseContent = ({ id, user }: Props) => {
   const [open, setOpen] = useState(false);
@@ -20,7 +23,7 @@ const CourseContent = ({ id, user }: Props) => {
     refetch,
   } = useGetCourseContentQuery(id, { refetchOnMountOrArgChange: true });
   const [activeVideo, setActiveVideo] = useState(0);
-  const data = contentData?.content;
+  const data = (contentData as CourseContentResponse)?.content ?? [];
   return (
     <>
       {isLoading ? (
@@ -38,7 +41,7 @@ const CourseContent = ({ id, user }: Props) => {
             <Heading
               title={data[activeVideo]?.title}
               description="anything"
-              keywords={data[activeVideo]?.tags}
+              keywords={data[activeVideo]?.tags || ""}
             />
             <div className="col-span-7">
               <CourseContentMedia

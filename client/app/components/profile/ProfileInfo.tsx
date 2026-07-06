@@ -10,9 +10,22 @@ import { AiOutlineCamera } from "react-icons/ai";
 import avatarIcon from "../../../public/assets/avatar.jpg";
 import toast from "react-hot-toast";
 
+type UserCourse = {
+  _id: string;
+};
+
+type User = {
+  courses: UserCourse[];
+  name?: string;
+  email?: string;
+  avatar?: { url?: string } | string | null;
+  role?: string;
+  [key: string]: unknown;
+};
+
 type Props = {
   avatar: string | null;
-  user: any;
+  user: User;
 };
 
 const ProfileInfo: FC<Props> = ({ user, avatar }) => {
@@ -56,7 +69,7 @@ const ProfileInfo: FC<Props> = ({ user, avatar }) => {
   //   }
   // }, [loadUser]);
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (name !== "") {
       await editProfile({
@@ -69,7 +82,11 @@ const ProfileInfo: FC<Props> = ({ user, avatar }) => {
       <div className="w-full flex justify-center">
         <div className="relative">
           <Image
-            src={user.avatar || avatar ? user.avatar.url || avatar : avatarIcon}
+            src={
+              typeof user.avatar === "string"
+                ? user.avatar
+                : user.avatar?.url || avatar || avatarIcon
+            }
             alt="avatar"
             width={120}
             height={120}

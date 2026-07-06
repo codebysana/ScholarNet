@@ -1,6 +1,7 @@
 import { styles } from "@/app/styles/style";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import { useCreateOrderMutation } from "@/redux/features/orders/ordersApi";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import {
   LinkAuthenticationElement,
   PaymentElement,
@@ -8,7 +9,7 @@ import {
   useStripe,
 } from "@stripe/react-stripe-js";
 import { redirect } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Dispatch, SetStateAction } from "react";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
@@ -16,39 +17,48 @@ const socketId = io(ENDPOINT, {
   transports: ["websocket"],
 });
 
-type Props = {
-  data: any;
-  setOpen: any;
-  user: any;
+type Course = {
+  _id: string;
+  name: string;
+  [key: string]: unknown;
 };
 
-const CheckoutForm = ({ data, setOpen, user }: Props) => {
+type User = {
+  _id: string;
+  [key: string]: unknown;
+};
+
+type Props = {
+  data: Course;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+  user: User;
+};
+
+const CheckoutForm = ({ data, user }: Props) => {
   const stripe = useStripe();
   const elements = useElements();
-  const [message, setMessage] = useState<any>("");
+  const [message, setMessage] = useState<string | null>(null);
   const [createOrder, { data: orderData, error }] = useCreateOrderMutation();
   const [loadUser, setLoadUser] = useState(false);
-  const { data: userData } = useLoadUserQuery({
-    skip: loadUser ? false : true,
-  });
+  useLoadUserQuery({ skip: !loadUser });
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: any) => {
-    e.preventDeafult();
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (!stripe || !elements) {
       return;
     }
     setIsLoading(true);
-    const { error, paymentIndent } = await stripe.confirmPayment({
+    const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       redirect: "if_required",
     });
     if (error) {
-      setMessage(error.message);
+      setMessage(error.message ?? null);
       setIsLoading(false);
-    } else if (paymentIndent && paymentIndent.status === "succeeded") {
+    } else if (paymentIntent && paymentIntent.status === "succeeded") {
       setIsLoading(false);
-      createOrder({ courseId: data._id, paymentInfo: paymentIndent });
+      createOrder({ courseId: data._id, paymentInfo: paymentIntent });
     }
   };
 
@@ -63,12 +73,13 @@ const CheckoutForm = ({ data, setOpen, user }: Props) => {
       redirect(`/course-access/${data._id}`);
     }
     if (error) {
-      if ("data" in error) {
-        const errorMessage = error as any;
-        toast.error(errorMessage.data.message);
+      const err = error as FetchBaseQueryError;
+
+      if ("data" in err) {
+        toast.error((err.data as { message: string }).message);
       }
     }
-  }, [orderData, error]);
+  }, [orderData, error, data, user]);
 
   return (
     <form id="payment-form" onSubmit={handleSubmit}>

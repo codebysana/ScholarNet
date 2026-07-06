@@ -2,23 +2,30 @@ import React, { FC, useState } from "react";
 import { BsChevronDown, BsChevronUp } from "react-icons/bs";
 import { MdOutlineOndemandVideo } from "react-icons/md";
 
+interface CourseVideo {
+  _id?: string;
+  title: string;
+  videoSection: string;
+  videoDuration: number;
+}
+
 type Props = {
-  data: any;
+  data: CourseVideo[];
   activeVideo?: number;
-  setActiveVideo?: any;
+  setActiveVideo?: React.Dispatch<React.SetStateAction<number>>;
   isDemo?: boolean;
 };
 
 const CourseContentList: FC<Props> = (props) => {
-  const [visibleSection, setVisibleSections] = useState<Set<string>>(
+  const [visibleSections, setVisibleSections] = useState<Set<string>>(
     new Set<string>()
   );
   // find unique video sections
   const videoSections: string[] = [
-    ...new Set<string>(props.data?.map((item: any) => item.videoSection)),
+    ...new Set<string>(props.data?.map((item: CourseVideo) => item.videoSection)),
   ];
   let totalCount: number = 0;
-  const toggleSection = (sectionLstring) => {
+  const toggleSection = (section: string) => {
     const newVisibleSections = new Set(visibleSections);
     if (newVisibleSections.has(section)) {
       newVisibleSections.delete(section);
@@ -33,15 +40,16 @@ const CourseContentList: FC<Props> = (props) => {
         props.isDemo && "ml-[-30px] min-h-screen sticky top-24 left-0 z-30"
       }`}
     >
-      {videoSections.map((section: string, sectionIndex: number) => {
-        const isSectionVisible = setVisibleSections.has(section);
+      {videoSections.map((section: string) => {
+        const isSectionVisible = visibleSections.has(section);
         // filter videos by section
-        const sectionVideos: any[] = props.data.filter(
-          (item: any) => item.videoSection === section
+        const sectionVideos: CourseVideo[] = props.data.filter(
+          (item: CourseVideo) => item.videoSection === section
         );
         const sectionVideoCount: number = sectionVideos.length;
         const sectionVideoDuration: number = sectionVideos.reduce(
-          (totalLength: number, item: any) => totalLength + item.videoDuration
+          (totalLength: number, item: CourseVideo) => totalLength + item.videoDuration,
+          0
         );
 
         const sectionStartIndex: number = totalCount;
@@ -82,18 +90,20 @@ const CourseContentList: FC<Props> = (props) => {
             <br />
             {isSectionVisible && (
               <div className="w-full">
-                {sectionVideos.map((item: any, index: number) => {
+                {sectionVideos.map((item: CourseVideo, index: number) => {
                   const videoIndex: number = sectionStartIndex + index;
-                  const contentLength: number = item.videoLength / 60;
+                  const contentLength: number = item.videoDuration ? item.videoDuration / 60 : 0;
                   return (
                     <div
                       className={`w-full ${
                         videoIndex === props.activeVideo ? "bg-slate-800" : ""
                       } cursor-pointer transition-all p-2`}
                       key={item._id}
-                      onClick={() =>
-                        props.isDemo ? null : props?.setActiveVideo(videoIndex)
-                      }
+                      onClick={() => {
+                        if (!props.isDemo && props.setActiveVideo) {
+                          props.setActiveVideo(videoIndex);
+                        }
+                      }}
                     >
                       <div className="flex items-start">
                         <div className="">
