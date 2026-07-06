@@ -20,7 +20,7 @@ const CourseData: FC<Props> = ({
   active,
   setActive,
 }) => {
-  const handleBenefitChange = (index: number, value: any) => {
+  const handleBenefitChange = (index: number, value: string) => {
     const updateBenefits = [...benefits];
     updateBenefits[index].title = value;
     setBenefits(updateBenefits);
@@ -30,7 +30,7 @@ const CourseData: FC<Props> = ({
     setBenefits([...benefits, { title: "" }]);
   };
 
-  const handlePrerequisitesChange = (index: number, value: any) => {
+  const handlePrerequisitesChange = (index: number, value: string) => {
     const updatePrerequisites = [...prerequisites];
     updatePrerequisites[index].title = value;
     setPrerequisites(updatePrerequisites);
@@ -61,7 +61,7 @@ const CourseData: FC<Props> = ({
           What are the benefits for studentsin this course
         </label>{" "}
         <br />
-        {benefits.map((benefit: any, index: number) => (
+        {benefits.map((benefit: { title: string }, index: number) => (
           <input
             type="text"
             key={index}
@@ -84,7 +84,7 @@ const CourseData: FC<Props> = ({
           What are the pre-requisites for students in this course
         </label>{" "}
         <br />
-        {prerequisites.map((prerequisites: any, index: number) => (
+        {prerequisites.map((prerequisite: { title: string }, index: number) => (
           <input
             type="text"
             key={index}
@@ -92,7 +92,7 @@ const CourseData: FC<Props> = ({
             placeholder="You need basic knowledge of MERN Stack"
             required
             className={`${styles.input} my-2`}
-            value={prerequisites.title}
+            value={prerequisite.title}
             onChange={(e) => handlePrerequisitesChange(index, e.target.value)}
           />
         ))}

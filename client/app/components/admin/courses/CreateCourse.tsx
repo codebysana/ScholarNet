@@ -8,6 +8,46 @@ import CoursePreview from "./CoursePreview";
 import { useCreateCourseMutation } from "@/redux/features/courses/coursesApi";
 import { redirect } from "next/navigation";
 import toast from "react-hot-toast";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+
+interface Benefit {
+  title: string;
+}
+
+interface Prerequisite {
+  title: string;
+}
+
+interface CourseLink {
+  title: string;
+  url: string;
+}
+
+interface CourseContentItem {
+  title: string;
+  description: string;
+  videoUrl: string;
+  videoSection: string;
+  videoDuration: string;
+  links: CourseLink[];
+  suggestion: string;
+}
+
+interface CoursePayload {
+  name: string;
+  description: string;
+  price: number;
+  estimatedPrice: number;
+  tags: string;
+  categories: string;
+  thumbnail: string;
+  level: string;
+  demoURL: string;
+  totalVideos: number;
+  benefits: Benefit[];
+  prerequisites: Prerequisite[];
+  courseData: CourseContentItem[];
+}
 
 const CreateCourse = () => {
   const [createCourse, { isLoading, isSuccess, error }] =
@@ -19,31 +59,49 @@ const CreateCourse = () => {
       redirect("/admin/courses");
     }
     if (error) {
-      if ("data" in error) {
-        const errorMessage = error as any;
-        toast.error(errorMessage.data.message);
+      const fetchError = error as FetchBaseQueryError;
+      const data = fetchError.data;
+      if (data && typeof data === "object" && "message" in data) {
+        toast.error((data as { message: string }).message);
+      } else {
+        toast.error("An error occurred while creating the course.");
       }
     }
   }, [isLoading, isSuccess, error]);
 
   const [active, setActive] = useState(0);
-  const [courseInfo, setCourseInfo] = useState({
+
+  interface CourseInfo {
+  name: string;
+  description: string;
+  price: number;
+  estimatedPrice: number;
+  tags: string;
+  level: string;
+  categories: string;
+  demoURL: string;
+  thumbnail: string;
+}
+
+  const [courseInfo, setCourseInfo] = useState<CourseInfo>({
     name: "",
     description: "",
-    price: "",
-    estimatedPrice: "",
+    price: 0,
+    estimatedPrice: 0,
     tags: "",
     level: "",
     categories: "",
     demoURL: "",
     thumbnail: "",
-  });
+  })
 
-  console.log(courseInfo);
-
-  const [benefits, setBenefits] = useState([{ title: "" }]);
-  const [prerequisites, setPrerequisites] = useState([{ title: "" }]);
-  const [courseContentData, setCourseContentData] = useState([
+  const [benefits, setBenefits] = useState<Benefit[]>([{ title: "" }]);
+  const [prerequisites, setPrerequisites] = useState<Prerequisite[]>([
+    { title: "" },
+  ]);
+  const [courseContentData, setCourseContentData] = useState<
+    CourseContentItem[]
+  >([
     {
       videoUrl: "",
       title: "",
@@ -60,13 +118,9 @@ const CreateCourse = () => {
     },
   ]);
 
-  const [courseData, setCourseData] = useState<{
-    categories: string[];
-    [key: string]: any;
-  }>({ categories: [] });
-
-  console.log(courseData);
-
+  const [courseData, setCourseData] = useState<CoursePayload | null>(null);
+  console.log("courseData", courseData);
+  
   // const buildCoursePayload = () => {
   //   // format benefits & prerequisites
   //   const formattedBenefits = benefits.map((b) => ({ title: b.title }));
@@ -168,7 +222,7 @@ const CreateCourse = () => {
 
   // console.log(courseData);
 
-  const buildCoursePayload = () => {
+  const buildCoursePayload = (): CoursePayload => {
     const formattedBenefits = benefits.map((b) => ({ title: b.title }));
     const formattedPrerequisites = prerequisites.map((p) => ({
       title: p.title,
@@ -196,8 +250,8 @@ const CreateCourse = () => {
     return {
       name: courseInfo.name,
       description: courseInfo.description,
-      price: courseInfo.price,
-      estimatedPrice: courseInfo.estimatedPrice,
+      price: Number(courseInfo.price) || 0,
+      estimatedPrice: Number(courseInfo.estimatedPrice) || 0,
       tags: courseInfo.tags,
       categories: categoryValue,
       thumbnail: courseInfo.thumbnail,
@@ -210,7 +264,7 @@ const CreateCourse = () => {
     };
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (): Promise<CoursePayload> => {
     const data = buildCoursePayload();
     setCourseData(data); // keep for backward compatibility if other code reads courseData
     return data;
@@ -242,7 +296,7 @@ const CreateCourse = () => {
   //   }
   // };
 
-  const handleCourseCreate = async (e?: any) => {
+  const handleCourseCreate = async () => {
     const data = buildCoursePayload();
     if (!isLoading) {
       await createCourse(data).unwrap();

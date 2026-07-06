@@ -1,7 +1,5 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { FC, useEffect, useState } from "react";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridRenderCellParams } from "@mui/x-data-grid";
 import { Box, Button, Modal } from "@mui/material";
 import { AiOutlineDelete, AiOutlineMail } from "react-icons/ai";
 import { useTheme } from "next-themes";
@@ -14,16 +12,33 @@ import {
 } from "@/redux/features/user/userApi";
 import { styles } from "@/app/styles/style";
 import toast from "react-hot-toast";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 type Props = {
   isTeam: boolean;
 };
 
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  courses: string[];
+  createdAt: string;
+}
+
+interface UserRow {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  courses: string[];
+  created_at: string;
+}
+
 const AllUsers: FC<Props> = ({ isTeam }) => {
   const { theme, setTheme } = useTheme();
   const [active, setActive] = useState(false);
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState("admin");
   const [open, setOpen] = useState(false);
   const [userId, setUserId] = useState("");
   const [updateUserRole, { error: updateError, isSuccess }] =
@@ -35,13 +50,20 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
   const [deleteUser, { isSuccess: deleteSuccess, error: deleteError }] =
     useDeleteUserMutation({});
 
+  console.log(setTheme, userId, "userId", updateUserRole, deleteUser, "deleteUser");
+
   useEffect(() => {
-    if (updateError) {
-      if ("data" in updateError) {
-        const errorMessage = updateError as any;
-        toast.error(errorMessage.data.message);
+      if (updateError) {
+        const fetchError = updateError as FetchBaseQueryError;
+
+        if (
+          fetchError.data &&
+          typeof fetchError.data === "object" &&
+          "message" in fetchError.data
+        ) {
+          toast.error((fetchError.data as { message: string }).message);
+        }
       }
-    }
     if (isSuccess) {
       refetch();
       toast.success("User role updated successfully");
@@ -53,12 +75,17 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
       setOpen(false);
     }
     if (deleteError) {
-      if ("data" in deleteError) {
-        const errorMessage = deleteError as any;
-        toast.error(errorMessage.data.message);
+      const fetchError = deleteError as FetchBaseQueryError;
+
+      if (
+        fetchError.data &&
+        typeof fetchError.data === "object" &&
+        "message" in fetchError.data
+      ) {
+        toast.error((fetchError.data as { message: string }).message);
       }
     }
-  }, [updateError, isSuccess, deleteSuccess, deleteError]);
+  }, [updateError, isSuccess, deleteSuccess, deleteError, refetch]);
 
   const columns = [
     { field: "id", headerName: "ID", flex: 0.3 },
@@ -72,7 +99,7 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
       field: " ",
       headerName: "Delete",
       flex: 0.2,
-      renderCell: (params: any) => {
+      renderCell: (params: GridRenderCellParams) => {
         return (
           <>
             <Button
@@ -95,7 +122,7 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
       field: "  ",
       headerName: "Email",
       flex: 0.2,
-      renderCell: (params: any) => {
+      renderCell: (params: GridRenderCellParams) => {
         return (
           <>
             <a href={`mailto:${params.row.email}`}>
@@ -107,22 +134,14 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
     },
   ];
 
-  const rows: any = [
-    {
-      id: "1234",
-      title: "React",
-      purchased: "30",
-      ratings: "5",
-      created_at: "01/01/17",
-    },
-  ];
+  const rows: UserRow[] = [];
 
   if (isTeam) {
     const newData =
-      data && data?.users?.filter((item: any) => item.role === "admin");
+      data && data?.users?.filter((item: User) => item.role === "admin");
 
-    newData &&
-      newData.forEach((item: any) => {
+    if (newData) {
+      newData.forEach((item: User) => {
         rows.push({
           id: item._id,
           name: item.name,
@@ -132,9 +151,10 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
           created_at: format(item.createdAt),
         });
       });
+    }
   } else {
-    data &&
-      data?.users?.forEach((item: any) => {
+    if (data) {
+      data?.users?.forEach((item: User) => {
         rows.push({
           id: item._id,
           name: item.name,
@@ -144,6 +164,7 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
           created_at: format(item.createdAt),
         });
       });
+    }
   }
 
   const handleDelete = () => {
@@ -271,12 +292,12 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
           </Box>
           {open && (
             <>
-              <Modal
-                open={open}
-                onClose={() => setOpen(!open)}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-              />
+             <Modal
+              open={open}
+              onClose={() => setOpen(!open)}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
               <Box className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2">
                 <h1 className={`${styles.title}`}>
                   Are you sure you want to delete this user
@@ -294,6 +315,7 @@ const AllUsers: FC<Props> = ({ isTeam }) => {
                   ></div>
                 </div>
               </Box>
+              </Modal>
             </>
           )}
         </Box>

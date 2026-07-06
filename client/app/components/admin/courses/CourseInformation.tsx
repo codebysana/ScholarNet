@@ -1,14 +1,31 @@
 /* eslint-disable @next/next/no-img-element */
 import { styles } from "@/app/styles/style";
-import React, { FC, useEffect, useState } from "react";
-import EditCategories from "../customization/EditCategories";
+import React, { FC, useEffect, useState, ChangeEvent, DragEvent, FormEvent } from "react";
 import { useGetHeroDataQuery } from "@/redux/features/layout/layoutApi";
+import { Dispatch, SetStateAction } from "react";
+
+interface CourseInfo {
+  name: string;
+  description: string;
+  price: number;
+  estimatedPrice: number;
+  tags: string;
+  categories: string;
+  level: string;
+  demoURL: string;
+  thumbnail: string;
+}
+
+interface Category {
+  _id: string;
+  title: string;
+}
 
 type Props = {
-  courseInfo: any;
-  setCourseInfo: (courseInfo: any) => void;
+  courseInfo: CourseInfo;
+  setCourseInfo: Dispatch<SetStateAction<CourseInfo>>;
   active: number;
-  setActive: (active: number) => void;
+  setActive: Dispatch<SetStateAction<number>>;
 };
 const CourseInformation: FC<Props> = ({
   courseInfo,
@@ -18,8 +35,13 @@ const CourseInformation: FC<Props> = ({
 }) => {
   const [dragging, setDragging] = useState(false);
 
+  interface HeroResponse {
+    layout: {
+      categories: Category[];
+    };
+  }
   const { data } = useGetHeroDataQuery("Categories", {});
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState<HeroResponse['layout']['categories']>([]);
 
   useEffect(() => {
     if (data) {
@@ -27,34 +49,34 @@ const CourseInformation: FC<Props> = ({
     }
   }, [data]);
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setActive(active + 1);
   };
 
-  const handleFileChange = (e: any) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e: any) => {
+      reader.onload = () => {
         if (reader.readyState === 2) {
-          setCourseInfo({ ...courseInfo, thumbnail: reader.result });
+          setCourseInfo({ ...courseInfo, thumbnail: reader.result as string });
         }
       };
       reader.readAsDataURL(file);
     }
   };
-  const handleDragOver = (e: any) => {
+  const handleDragOver = (e: DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     setDragging(true);
   };
 
-  const handleDragLeave = (e: any) => {
+  const handleDragLeave = (e: DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     setDragging(false);
   };
 
-  const handleDrop = (e: any) => {
+  const handleDrop = (e: DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
     setDragging(false);
 
@@ -62,7 +84,7 @@ const CourseInformation: FC<Props> = ({
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        setCourseInfo({ ...courseInfo, thumbnail: reader.result });
+        setCourseInfo({ ...courseInfo, thumbnail: reader.result as string });
       };
       reader.readAsDataURL(file);
     }
@@ -77,7 +99,7 @@ const CourseInformation: FC<Props> = ({
             name=""
             required
             value={courseInfo.name}
-            onChange={(e: any) =>
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
               setCourseInfo({ ...courseInfo, name: e.target.value })
             }
             id="name"
@@ -96,7 +118,7 @@ const CourseInformation: FC<Props> = ({
             placeholder="Write About Yourself"
             className={`${styles.input} !h-min !py-2`}
             value={courseInfo.description}
-            onChange={(e: any) =>
+            onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
               setCourseInfo({ ...courseInfo, description: e.target.value })
             }
           ></textarea>
@@ -110,8 +132,8 @@ const CourseInformation: FC<Props> = ({
               name=""
               required
               value={courseInfo.price}
-              onChange={(e: any) =>
-                setCourseInfo({ ...courseInfo, price: e.target.value })
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setCourseInfo({ ...courseInfo, price: Number(e.target.value) })
               }
               id="price"
               placeholder="29"
@@ -125,8 +147,8 @@ const CourseInformation: FC<Props> = ({
               name=""
               required
               value={courseInfo.estimatedPrice}
-              onChange={(e: any) =>
-                setCourseInfo({ ...courseInfo, estimatedPrice: e.target.value })
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setCourseInfo({ ...courseInfo, estimatedPrice: Number(e.target.value) })
               }
               id="price"
               placeholder="79"
@@ -143,7 +165,7 @@ const CourseInformation: FC<Props> = ({
               name=""
               required
               value={courseInfo.tags}
-              onChange={(e: any) =>
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setCourseInfo({ ...courseInfo, tags: e.target.value })
               }
               id="tags"
@@ -160,12 +182,12 @@ const CourseInformation: FC<Props> = ({
               id=""
               className={`${styles.input}`}
               value={courseInfo.categories}
-              onChange={(e: any) =>
+              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
                 setCourseInfo({ ...courseInfo, categories: e.target.value })
               }
             >
               <option value="">Select Category</option>
-              {categories?.map((item: any) => (
+              {categories?.map((item: Category) => (
                 <option value={item._id} key={item._id}>
                   {item.title}
                 </option>
@@ -183,7 +205,7 @@ const CourseInformation: FC<Props> = ({
               name=""
               required
               value={courseInfo.level}
-              onChange={(e: any) =>
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setCourseInfo({ ...courseInfo, level: e.target.value })
               }
               id="level"
@@ -198,7 +220,7 @@ const CourseInformation: FC<Props> = ({
               name=""
               required
               value={courseInfo.demoURL}
-              onChange={(e: any) =>
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setCourseInfo({ ...courseInfo, demoURL: e.target.value })
               }
               id="demoURL"

@@ -6,8 +6,8 @@ type Props = {
   setActive: (active: number) => void;
 };
 
-const CourseOptions: FC<Props> = ({ active, setActive }) => {
-  const options = [
+const CourseOptions: FC<Props> = ({ active }) => {
+  const options: string[] = [
     "Course Information",
     "Course Options",
     "Course Content",
@@ -15,7 +15,7 @@ const CourseOptions: FC<Props> = ({ active, setActive }) => {
   ];
   return (
     <div>
-      {options.map((option: any, index: number) => (
+      {options.map((option: string, index: number) => (
         <div key={index} className={`w-full flex py-5`}>
           <div
             className={`w-[35px] h-[35px] rounded-full flex items-center justify-center ${

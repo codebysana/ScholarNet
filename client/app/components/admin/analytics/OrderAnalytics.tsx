@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useGetOrdersAnalyticsQuery } from "@/redux/features/analytics/analyticsApi";
-import { useEffect } from "react";
 import Loader from "../../loader/Loader";
 import { styles } from "@/app/styles/style";
 import {
@@ -51,12 +48,12 @@ type Props = { isDashboard?: boolean };
 const OrderAnalytics = ({ isDashboard }: Props) => {
   const { data, isLoading } = useGetOrdersAnalyticsQuery({});
 
-  const analyticsData: any = [];
+  const analyticsData: { name: string; Count: number }[] = [];
+  const monthlyOrders = data?.orders?.last12Months ?? [];
 
-  data &&
-    data?.orders?.last12Months?.forEach((item: any) => {
-      analyticsData.push({ name: item.name, Count: item.count });
-    });
+  monthlyOrders.forEach((item: { name: string; count: number }) => {
+    analyticsData.push({ name: item.name, Count: item.count });
+  });
 
   return (
     <>

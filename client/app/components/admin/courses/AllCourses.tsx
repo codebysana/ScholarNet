@@ -1,7 +1,5 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 import React, { useEffect, useState } from "react";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridRenderCellParams, GridColDef } from "@mui/x-data-grid";
 import { Box, Button, Modal } from "@mui/material";
 import { AiFillEdit, AiOutlineDelete } from "react-icons/ai";
 import { useTheme } from "next-themes";
@@ -12,11 +10,30 @@ import { useDeleteCourseMutation } from "@/redux/features/courses/coursesApi";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { useGetAllCoursesQuery } from "../../../../redux/features/courses/coursesApi";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
-type Props = {};
+interface Course {
+  _id: string;
+  name: string;
+  ratings: number;
+  purchased: number;
+  createdAt: string;
+}
 
-const AllCourses = () => {
-  const { theme, setTheme } = useTheme();
+interface CoursesData {
+  courses: Course[];
+}
+
+interface Row {
+  id: string;
+  title: string;
+  ratings: number;
+  purchased: number;
+  created_at: string;
+}
+
+const AllCourses: React.FC = () => {
+  const { theme } = useTheme();
   const [open, setOpen] = useState(false);
   const [courseId, setCourseId] = useState("");
   const { isLoading, data, refetch } = useGetAllCoursesQuery(
@@ -24,7 +41,7 @@ const AllCourses = () => {
     { refetchOnMountOrArgChange: true }
   );
   const [deleteCourse, { isSuccess, error }] = useDeleteCourseMutation({});
-  const columns = [
+  const columns: GridColDef[] = [
     { field: "id", headerName: "ID", flex: 0.5 },
     { field: "title", headerName: "Course Title", flex: 1 },
     { field: "ratings", headerName: "Ratings", flex: 0.5 },
@@ -34,7 +51,7 @@ const AllCourses = () => {
       field: "  ",
       headerName: "Edit",
       flex: 0.2,
-      renderCell: (params: any) => {
+      renderCell: (params: GridRenderCellParams) => {
         return (
           <>
             <Link href={`/admin/edit-course/${params.row.id}`}>
@@ -52,7 +69,7 @@ const AllCourses = () => {
       field: " ",
       headerName: "Delete",
       flex: 0.2,
-      renderCell: (params: any) => {
+      renderCell: (params: GridRenderCellParams) => {
         return (
           <>
             <Button
@@ -72,20 +89,18 @@ const AllCourses = () => {
     },
   ];
 
-  const rows: any = [];
+  const rows: Row[] = [];
+  const coursesData = data as unknown as CoursesData | undefined;
 
-  {
-    data &&
-      data.allCourses.forEach((item: any) => {
-        rows.push({
-          id: item._id,
-          title: item.name,
-          ratings: item.ratings,
-          purchased: item.purchased,
-          created_at: format(item.createdAt),
-        });
-      });
-  }
+  coursesData?.courses?.forEach((item: Course) => {
+    rows.push({
+      id: item._id,
+      title: item.name,
+      ratings: item.ratings,
+      purchased: item.purchased,
+      created_at: format(item.createdAt),
+    });
+  });
 
   // const rows: any = [
   //   // {
@@ -103,13 +118,11 @@ const AllCourses = () => {
       refetch();
       toast.success("Course created successfully");
     }
-    if (error) {
-      if ("data" in error) {
-        const errorMessage = error as any;
-        toast.error(errorMessage.data.message);
-      }
+    if (error && typeof error === "object" && error !== null && "data" in error) {
+      const errorMessage = error as FetchBaseQueryError;
+      toast.error((errorMessage.data as { message: string }).message);
     }
-  }, [isSuccess, error]);
+  }, [isSuccess, error, refetch]);
 
   const handleDelete = async () => {
     const id = courseId;
@@ -223,13 +236,12 @@ const AllCourses = () => {
             <DataGrid checkboxSelection rows={rows} columns={columns} />
           </Box>
           {open && (
-            <>
-              <Modal
-                open={open}
-                onClose={() => setOpen(!open)}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-              />
+            <Modal
+              open={open}
+              onClose={() => setOpen(!open)}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
               <Box className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2">
                 <h1 className={`${styles.title}`}>
                   Are you sure you want to delete this course
@@ -244,10 +256,12 @@ const AllCourses = () => {
                   <div
                     className={`${styles.button} !w-[120px] h-[30px] text-white`}
                     onClick={handleDelete}
-                  ></div>
+                  >
+                    Delete
+                  </div>
                 </div>
               </Box>
-            </>
+            </Modal>
           )}
         </Box>
       )}

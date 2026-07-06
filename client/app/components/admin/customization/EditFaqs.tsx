@@ -9,6 +9,14 @@ import { AiOutlineDelete } from "react-icons/ai";
 import { HiMinus, HiPlus } from "react-icons/hi";
 import {IoMdAddCircleOutline} from "react-icons/io";
 import Loader from "../../loader/Loader";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
+
+interface FaqQuestion {
+  _id?: string;
+  question: string;
+  answer: string;
+  active?: boolean;
+}
 
 const EditFaqs = () => {
   const { data, isLoading } = useGetHeroDataQuery("FAQ", {
@@ -18,7 +26,7 @@ const EditFaqs = () => {
   const [editLayout, { isSuccess: layoutSuccess, error }] =
     useEditLayoutMutation();
 
-  const [questions, setQuestions] = useState<any[]>([]);
+  const [questions, setQuestions] = useState<FaqQuestion[]>([]);
   useEffect(() => {
     if (data) {
       setQuestions(data.layout.faqs);
@@ -26,28 +34,33 @@ const EditFaqs = () => {
     if (layoutSuccess) {
       toast.success("FAQS updated successfully");
     }
-    if (error) {
-      if ("data" in error) {
-        const errorData = error as any;
-        toast.error(errorData?.data?.message);
-      }
-    }
+     if (error) {
+       const fetchError = error as FetchBaseQueryError;
+
+       if (
+         fetchError.data &&
+         typeof fetchError.data === "object" &&
+         "message" in fetchError.data
+       ) {
+         toast.error((fetchError.data as { message: string }).message);
+       }
+     }
   }, [data, layoutSuccess, error]);
   console.log(data);
 
-  const toggleQuestion = (id: any) => {
+  const toggleQuestion = (id: string) => {
     setQuestions((prevQuestions) =>
       prevQuestions.map((q) => (q._id === id ? { ...q, active: !q.active } : q))
     );
   };
 
-  const handleQuestionChange = (id: any, value: string) => {
+  const handleQuestionChange = (id: string, value: string) => {
     setQuestions((prevQuestions) =>
       prevQuestions.map((q) => (q._id === id ? { ...q, question: value } : q))
     );
   };
 
-  const handleAnswerChange = (id: any, value: string) => {
+  const handleAnswerChange = (id: string, value: string) => {
     setQuestions((prevQuestions) =>
       prevQuestions.map((q) => (q._id === id ? { ...q, answer: value } : q))
     );
@@ -57,6 +70,7 @@ const EditFaqs = () => {
     setQuestions([
       ...questions,
       {
+        _id: `${Date.now()}-${Math.random()}`,
         question: "",
         answer: "",
       },
@@ -64,23 +78,24 @@ const EditFaqs = () => {
   };
 
   const areQuestionsUnchanged = (
-    originalQuestions: any[],
-    newQuestions: any[]
+    originalQuestions: FaqQuestion[],
+    newQuestions: FaqQuestion[]
   ) => {
     return JSON.stringify(originalQuestions) === JSON.stringify(newQuestions);
   };
 
-  const isAnyQuestionEmpty = (questions: any[]) => {
+  const isAnyQuestionEmpty = (questions: FaqQuestion[]) => {
     return questions.some((q) => q.question === "" || q.answer === "");
   };
 
   const handleEdit = async () => {
     if (
-      !areQuestionsUnchanged(data.layout.faqs.questions) &&
+      data &&
+      !areQuestionsUnchanged(data.layout.faqs, questions) &&
       !isAnyQuestionEmpty(questions)
     ) {
       await editLayout({
-        type: "FAQS",
+        type: "FAQs",
         faqs: questions,
       });
     }
@@ -94,7 +109,7 @@ const EditFaqs = () => {
         <div className="w-[90%] 800px:w-[80%] m-auto mt-[120px]">
           <div className="mt-12">
             <dl className="space-y-8">
-              {questions.map((q: any) => (
+              {questions.map((q: FaqQuestion) => (
                 <div
                   key={q._id}
                   className={`${
@@ -102,15 +117,15 @@ const EditFaqs = () => {
                   } border-gray-200 pt-6`}
                 >
                   <dt className="text-lg">
-                    <button
+                      <button
                       className="flex items-start dark:text-white text-black justify-between w-full text-left focus:outline-none"
-                      onClick={() => toggleQuestion(q._id)}
+                      onClick={() => toggleQuestion(q._id!)}
                     >
                       <input
                         className={`${styles.input} border-none`}
                         value={q.question}
-                        onChange={(e: any) =>
-                          handleQuestionChange(q._id, e.target.value)
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          handleQuestionChange(q._id!, e.target.value)
                         }
                         placeholder="Add your question..."
                       />
@@ -128,8 +143,8 @@ const EditFaqs = () => {
                       <input
                         className={`${styles.input} border-none`}
                         value={q.answer}
-                        onChange={(e: any) =>
-                          handleAnswerChange(q._id, e.target.value)
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          handleAnswerChange(q._id!, e.target.value)
                         }
                         placeholder="Add your answer"
                       />

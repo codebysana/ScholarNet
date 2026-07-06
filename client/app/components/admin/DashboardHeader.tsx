@@ -1,5 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
-import { MdNotifications } from "react-icons/md";
+import React, { FC, useEffect, useState, useCallback } from "react";
 import ThemeSwitcher from "../../../app/utils/themeSwitcher";
 import { io } from "socket.io-client";
 import {
@@ -13,9 +12,17 @@ const socketId = io(ENDPOINT, {
   transports: ["websocket"],
 });
 
+type Notification = {
+  _id: string;
+  title: string;
+  message: string;
+  status: "read" | "unread";
+  createdAt: string;
+};
+
 type Props = {
   open?: boolean;
-  setOpen?: any;
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const DashboardHeader: FC<Props> = ({ open, setOpen }) => {
@@ -24,35 +31,35 @@ const DashboardHeader: FC<Props> = ({ open, setOpen }) => {
   });
   const [updateNotificationStatus, { isSuccess }] =
     useUpdateNotificationStatusMutation();
-  const [notifications, setNotifications] = useState<any>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [audio] = useState(
     new Audio(
       "https://res.cloudinary.com/dsqbqjbms/video/upload/v1755049307/mixkit-water-bubble-1317_wlegzh.wav"
     )
   );
 
-  const playerNotificationSound = () => {
+  const playerNotificationSound = useCallback(() => {
     audio.play();
-  };
+  }, [audio]);
 
   useEffect(() => {
     if (data) {
       setNotifications(
-        data.notifications.filter((item: any) => item.status === "unread")
+        data.notifications.filter((item: Notification) => item.status === "unread")
       );
     }
     if (isSuccess) {
       refetch();
     }
     audio.load();
-  }, [data, isSuccess]);
+  }, [data, isSuccess, refetch, audio]);
 
   useEffect(() => {
-    socketId.on("newNoification", (data) => {
+    socketId.on("newNoification", () => {
       refetch();
       playerNotificationSound();
     });
-  }, []);
+  }, [ refetch, playerNotificationSound]);
 
   const handleNotificationStatusChange = async (id: string) => {
     await updateNotificationStatus(id);
@@ -63,7 +70,7 @@ const DashboardHeader: FC<Props> = ({ open, setOpen }) => {
       <ThemeSwitcher />
       <div
         className="relative cursor-pointer m-2"
-        onClick={() => setOpen(!open)}
+        onClick={() => setOpen && setOpen(!open)}
       >
         <IoMdNotificationsOutline className="text-2xl cursor-pointer dark:text-white text-black" />
         <span className="absolute -top-2 -right-2 bg-[#3ccba0] rounded-full w-[20px] h-[20px] text-[12px] flex items-center justify-center font-semibold">
@@ -76,8 +83,11 @@ const DashboardHeader: FC<Props> = ({ open, setOpen }) => {
             Notifications
           </h5>
           {notifications &&
-            notifications.map((item: any, index: number) => {
-              <div className="dark:bg-[#2d3a4ea1] bg-[#00000013] font-Poppins border-b dark:border-b-[#ffffff47]">
+            notifications.map((item: Notification, index: number) => (
+              <div
+                className="dark:bg-[#2d3a4ea1] bg-[#00000013] font-Poppins border-b dark:border-b-[#ffffff47]"
+                key={index}
+              >
                 <div className="w-full flex items-center justify-between p-2">
                   <p className="text-black dark:text-white">{item.title}</p>
                   <p
@@ -93,8 +103,8 @@ const DashboardHeader: FC<Props> = ({ open, setOpen }) => {
                 <p className="p-2 text-black dark:text-white text-[14px]">
                   {format(item.createdAt)}
                 </p>
-              </div>;
-            })}
+              </div>
+            ))}
         </div>
       )}
     </div>

@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-undef */
 import { Box, IconButton, Typography } from "@mui/material";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import Link from "next/link";
@@ -22,14 +21,13 @@ import { RiGlobeLine, RiGroupFill, RiReceiptLine } from "react-icons/ri";
 import { FcVideoCall } from "react-icons/fc";
 import { BiBarChart, BiMapPin } from "react-icons/bi";
 import { AiOutlineLogout } from "react-icons/ai";
-import {NavLink}from "react-router-dom"
 
 interface itemProps {
   title: string;
   to: string;
   icon: JSX.Element;
   selected: string;
-  setSelected: any;
+  setSelected: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const Item: FC<itemProps> = ({ title, to, icon, selected, setSelected }) => {
@@ -46,13 +44,21 @@ const Item: FC<itemProps> = ({ title, to, icon, selected, setSelected }) => {
   );
 };
 
+interface AuthState {
+  user?: {
+    avatar?: { url?: string } | string;
+    name?: string;
+    role?: string;
+  };
+}
+
 const AdminSidebar = () => {
-  const { user } = useSelector((state: any) => state.auth);
-  const [logout, setLogout] = useState(false);
+  const { user } = useSelector((state: { auth: AuthState }) => state.auth);
+  // const [logout, setLogout] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
   const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
+  const { theme,  } = useTheme();
 
   useEffect(() => {
     setMounted(true);
@@ -62,9 +68,9 @@ const AdminSidebar = () => {
     return null;
   }
 
-  const logoutHandler = () => {
-    setLogout(true);
-  };
+  // const logoutHandler = () => {
+  //   setLogout(true);
+  // };
 
   return (
     <Box
@@ -147,7 +153,11 @@ const AdminSidebar = () => {
             <Box mb="25px">
               <Box display="flex" justifyContent="center" alignItems="center">
                 <Image
-                  src={user?.avatar ? user?.avatar.url : avatarDefault}
+                  src={
+                    typeof user?.avatar === "string"
+                      ? user?.avatar
+                      : user?.avatar?.url ?? avatarDefault
+                  }
                   alt="profile-user"
                   width={100}
                   height={100}

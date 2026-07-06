@@ -4,11 +4,30 @@ import { styles } from "../../../../app/styles/style";
 import Ratings from "../../../../app/utils/Ratings";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 
+type CourseBenefit = {
+  title: string;
+};
+
+type CourseData = {
+  estimatedPrice?: number;
+  price?: number;
+  title?: string;
+  demoURL?: string;
+  courseData?: {
+    videoUrl?: string;
+  }[];
+  name?: string;
+  benefits?: CourseBenefit[];
+  prerequisites?: CourseBenefit[];
+  description?: string;
+  categories?: string;
+};
+
 type Props = {
   active: number;
   setActive: (active: number) => void;
-  courseData: any;
-  handleCourseCreate: any;
+  courseData: CourseData;
+  handleCourseCreate: () => void;
   isEdit: boolean;
 };
 
@@ -19,10 +38,9 @@ const CoursePreview: FC<Props> = ({
   handleCourseCreate,
   isEdit,
 }) => {
-  const discountPercentage =
-    ((courseData?.estimatedPrice - courseData?.price) /
-      courseData?.estimatedPrice) *
-    100;
+  const estimated = courseData?.estimatedPrice ?? 0;
+  const price = courseData?.price ?? 0;
+  const discountPercentage = estimated > 0 ? ((estimated - price) / estimated) * 100 : 0;
 
   const discountPercentagePrice = discountPercentage.toFixed(0);
 
@@ -38,7 +56,7 @@ const CoursePreview: FC<Props> = ({
       <div className="w-full relative">
         <div className="w-full mt-10">
           <CoursePlayer
-            title={courseData?.title}
+            title={courseData?.title || ""}
             videoUrl={
               courseData?.demoURL || courseData?.courseData?.[0]?.videoUrl || ""
             }
@@ -98,12 +116,12 @@ const CoursePreview: FC<Props> = ({
             What you will learn from this course
           </h1>
         </div>
-        {courseData?.benefits?.map((item: any, index: number) => (
+        {courseData?.benefits?.map((item: CourseBenefit, index: number) => (
           <div className="w-full flex 800px:items-center py-2" key={index}>
             <div className="w-[15px] mr-1">
               <IoCheckmarkDoneOutline size={20} />
             </div>
-            <p className="pl-2">{item.title}</p>
+            <p className="pl-2">{item.title || ""}</p>
           </div>
         ))}
         <br />
@@ -112,12 +130,12 @@ const CoursePreview: FC<Props> = ({
         <h1 className="text-[25px] font-Poppins font-[600]">
           What are the prerequisites for starting this course?
         </h1>
-        {courseData?.prerequisites?.map((item: any, index: number) => (
+        {courseData?.prerequisites?.map((item: CourseBenefit, index: number) => (
           <div className="w-full flex 800px:items-center py-2" key={index}>
             <div className="w-[15px] mr-1">
               <IoCheckmarkDoneOutline size={20} />
             </div>
-            <p className="pl-2">{item.title}</p>
+            <p className="pl-2">{item.title || ""}</p>
           </div>
         ))}
         {/* course description */}
@@ -126,12 +144,12 @@ const CoursePreview: FC<Props> = ({
             Course Details
           </h1>
           <p className="text-[18px] mt-[20px] whitespace-pre-line w-full overflow-hidden">
-            {courseData?.description}
+            {courseData?.description || ""}
           </p>
           {/* ✅ categories here instead */}
           {courseData?.categories && (
             <p className="mt-2 text-gray-600">
-              Category: {courseData.categories}
+              Category: {courseData.categories || ""}
             </p>
           )}
         </div>

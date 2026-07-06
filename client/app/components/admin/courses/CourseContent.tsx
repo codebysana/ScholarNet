@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { styles } from "@/app/styles/style";
 import React, { FC, useState } from "react";
 import toast from "react-hot-toast";
@@ -11,12 +10,27 @@ import { BiSolidPencil } from "react-icons/bi";
 import { BsLink45Deg } from "react-icons/bs";
 import { MdDelete, MdOutlineKeyboardArrowDown } from "react-icons/md";
 
+type CourseContentLink = {
+  title: string;
+  url: string;
+};
+
+type CourseContentItem = {
+  title: string;
+  description: string;
+  videoUrl: string;
+  videoSection: string;
+  videoDuration: string;
+  links: CourseContentLink[];
+  suggestion: string;
+};
+
 type Props = {
   active: number;
   setActive: (active: number) => void;
-  courseContentData: any;
-  setCourseContentData: (courseContentData: any) => void;
-  handleSubmit: any;
+  courseContentData: CourseContentItem[];
+  setCourseContentData: (courseContentData: CourseContentItem[]) => void;
+  handleSubmit: () => void;
 };
 
 const CourseContent: FC<Props> = ({
@@ -30,7 +44,7 @@ const CourseContent: FC<Props> = ({
     Array(courseContentData.length).fill(false)
   );
   const [activeSection, setActiveSection] = useState(1);
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   };
 
@@ -52,12 +66,14 @@ const CourseContent: FC<Props> = ({
     setCourseContentData(updatedData);
   };
 
-  const newContentHandler = (item: any) => {
+  const newContentHandler = (item: CourseContentItem) => {
     if (
       item.title === "" ||
       item.description === "" ||
-      item.videoUrl === "" ||
-      item.links[0].url === ""
+      item.videoUrl === "" || 
+      item.videoDuration === "" ||
+      item.links[0].url === "" ||
+      item.suggestion === ""
     ) {
       toast.error("Please fill all the fields first.");
     } else {
@@ -70,12 +86,14 @@ const CourseContent: FC<Props> = ({
           newVideoSection = lastVideoSection;
         }
       }
-      const newContent = {
-        videoUrl: "",
+      const newContent : CourseContentItem = {
         title: "",
         description: "",
+        videoUrl: "",
         videoSection: newVideoSection,
+        videoDuration: "",
         links: [{ title: "", url: "" }],
+        suggestion: "",
       };
       setCourseContentData([...courseContentData, newContent]);
     }
@@ -92,12 +110,14 @@ const CourseContent: FC<Props> = ({
       toast.error("Please fill all the fields first!");
     } else {
       setActiveSection(activeSection + 1);
-      const newContent = {
+      const newContent : CourseContentItem = {
         title: "",
         description: "",
         videoUrl: "",
         videoSection: `Untitled Section ${activeSection}`,
+        videoDuration: "",
         links: [{ title: "", url: "" }],
+        suggestion: "",
       };
       setCourseContentData([...courseContentData, newContent]);
     }
@@ -124,9 +144,9 @@ const CourseContent: FC<Props> = ({
   console.log(courseContentData);
 
   return (
-    <div className="w-[80%] m-auto mt-24 p-3">
+    <div className="w-[80%] m-auto mt-24 p-3" key={activeSection}>
       <form onSubmit={handleSubmit}>
-        {courseContentData?.map((item: any, index: number) => {
+        {courseContentData?.map((item: CourseContentItem, index: number) => {
           const showSectionInput =
             index === 0 ||
             item.videoSection !== courseContentData[index - 1].videoSection;
@@ -260,7 +280,7 @@ const CourseContent: FC<Props> = ({
                       />
                       <br />
                     </div>
-                    {item?.links.map((link: any, linkIndex: number) => (
+                    {item?.links.map((link: CourseContentLink, linkIndex: number) => (
                       <div className="mb-3 block" key={linkIndex}>
                         <div className="w-full flex items-center justify-between">
                           <label className={styles.label}>
@@ -324,7 +344,7 @@ const CourseContent: FC<Props> = ({
                   <div>
                     <p
                       className="flex items-center tet-[18px] dark:text-white text-black cursor-pointer"
-                      onClick={(e: any) => newContentHandler(item)}
+                      onClick={() => newContentHandler(item)}
                     >
                       <AiOutlinePlayCircle className="mr-2" />
                       Add New Content

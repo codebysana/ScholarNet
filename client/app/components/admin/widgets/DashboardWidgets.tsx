@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { BiBorderLeft } from "react-icons/bi";
 import UserAnalytics from "../analytics/UserAnalytics";
 import { PiUsersFourLight } from "react-icons/pi";
@@ -16,9 +16,15 @@ type Props = {
   value?: number;
 };
 
+type ComparePercentage = {
+  currentMonth: number;
+  previousMonth: number;
+  percentChange: number;
+};
+
 const CircularProgressWithLabel: FC<Props> = ({ open, value }) => {
   return (
-    <Box sm={{ position: "relative", display: "inline-flex" }}>
+    <Box sx={{ position: "relative", display: "inline-flex" }}>
       <CircularProgress
         variant="determinate"
         value={value}
@@ -43,12 +49,15 @@ const CircularProgressWithLabel: FC<Props> = ({ open, value }) => {
   );
 };
 const DashboardWidgets: FC<Props> = ({ open }) => {
-  const [comparePercentage, setComparePercentage] = useState();
-  const [ordersComparePercentage, setOrdersComparePercentage] = useState<any>();
-  const [userComparePercentage, setUserComparePercentage] = useState<any>();
+  const [comparePercentage, setComparePercentage] = useState<ComparePercentage | null>(null);
+  const [ordersComparePercentage, setOrdersComparePercentage] = useState<ComparePercentage | null>(null);
+  const [userComparePercentage, setUserComparePercentage] = useState<ComparePercentage | null>(null);
   const { data, isLoading } = useGetUsersAnalyticsQuery({});
   const { data: ordersData, isLoading: ordersLoading } =
     useGetOrdersAnalyticsQuery({});
+
+  const ordersPercentChange = ordersComparePercentage?.percentChange ?? 0;
+  const usersPercentChange = userComparePercentage?.percentChange ?? 0;
 
   useEffect(() => {
     if (isLoading && ordersLoading) {
@@ -199,11 +208,11 @@ const DashboardWidgets: FC<Props> = ({ open }) => {
             </div>
             <div className="text-center">
               <CircularProgressWithLabel
-                value={ordersComparePercentage?.percentChange > 0 ? 100 : 0}
+                value={(ordersComparePercentage?.percentChange ?? 0) > 0 ? 100 : 0}
                 open={open}
               />
               <p className="pt-2 text-[#01b19a] text-sm font-medium">
-                {ordersComparePercentage?.percentChange > 0
+                {(ordersComparePercentage?.percentChange ?? 0) > 0
                   ? "+" + ordersComparePercentage?.percentChange.toFixed(2)
                   : "-" +
                     ordersComparePercentage?.percentChange.toFixed(2)}{" "}
@@ -225,13 +234,13 @@ const DashboardWidgets: FC<Props> = ({ open }) => {
             </div>
             <div className="text-center">
               <CircularProgressWithLabel
-                value={userComparePercentage?.percentChange > 0 ? 100 : 0}
+                value={(userComparePercentage?.percentChange ?? 0) > 0 ? 100 : 0}
                 open={open}
               />
               <p className="pt-2 text-[#01b19a] text-sm font-medium">
-                {userComparePercentage?.percentChange > 0
-                  ? "+" + userComparePercentage?.percentChange.toFixed(2)
-                  : "-" + userComparePercentage?.percentChange.toFixed(2)}{" "}
+                {(userComparePercentage?.percentChange ?? 0) > 0
+                  ? "+" + (userComparePercentage?.percentChange ?? 0).toFixed(2)
+                  : "-" + (userComparePercentage?.percentChange ?? 0).toFixed(2)}{" "}
                 %
               </p>
             </div>

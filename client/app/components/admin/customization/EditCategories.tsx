@@ -8,6 +8,7 @@ import { styles } from "@/app/styles/style";
 import { AiOutlineDelete } from "react-icons/ai";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import toast from "react-hot-toast";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 const EditCategories = () => {
   const { data, isLoading, refetch } = useGetHeroDataQuery("Categories", {
@@ -16,7 +17,8 @@ const EditCategories = () => {
 
   const [editLayout, { isSuccess: layoutSuccess, error }] =
     useEditLayoutMutation();
-  const [categories, setCategories] = useState<any>([]);
+  type Category = { _id?: string; title: string };
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     if (data) {
@@ -27,37 +29,38 @@ const EditCategories = () => {
       toast.success("Categories updated successfully");
     }
     if (error) {
-      if ("data" in error) {
-        const errorData = error as any;
-        toast.error(errorData?.data?.message);
+      const fetchError = error as FetchBaseQueryError;
+
+      if (
+        fetchError.data &&
+        typeof fetchError.data === "object" &&
+        "message" in fetchError.data
+      ) {
+        toast.error((fetchError.data as { message: string }).message);
       }
     }
-  }, [data, layoutSuccess, error]);
+  }, [data, layoutSuccess, error, refetch]);
 
-  const handleCategoriesAdd = (id: any, value: string) => {
-    setCategories((prevCategory: any) =>
-      prevCategory.map((i: any) => (i._id === id ? { ...i, title: value } : i))
+  const handleCategoriesAdd = (id: string | undefined, value: string) => {
+    setCategories((prevCategory: Category[]) =>
+      prevCategory.map((i) => (i._id === id ? { ...i, title: value } : i))
     );
   };
 
   const newCategoriesHandler = () => {
-    if (categories[categories.length - 1].title === "") {
+    if (categories.length > 0 && categories[categories.length - 1].title === "") {
       toast.error("Category title can't be empty");
     } else {
-      setCategories((prevCategory: any) => [...prevCategory, { title: "" }]);
+      setCategories((prevCategory: Category[]) => [...prevCategory, { title: "" }]);
     }
   };
 
   const areCategoriesUnchanged = (
-    originalCategories: any[],
-    newCategories: any[]
-  ) => {
-    return JSON.stringify(originalCategories) === JSON.stringify(newCategories);
-  };
+    originalCategories: Category[],
+    newCategories: Category[]
+  ) => JSON.stringify(originalCategories) === JSON.stringify(newCategories);
 
-  const isAnyCategoryTitleEmpty = (categories: any[]) => {
-    return categories.some((q) => q.title === "");
-  };
+  const isAnyCategoryTitleEmpty = (categories: Category[]) => categories.some((q) => q.title === "");
 
   const editCategoriesHandler = async () => {
     if (
@@ -79,7 +82,7 @@ const EditCategories = () => {
         <div className="mt-[120px] text-center">
           <h1 className={`${styles.title}`}>All Categories</h1>
           {categories &&
-            categories.map((item: any, index: number) => {
+            categories.map((item: Category, index: number) => {
               return (
                 <div className="p-3" key={index}>
                   <div className="flex items-center justify-center w-full">
@@ -93,8 +96,8 @@ const EditCategories = () => {
                     <AiOutlineDelete
                       className="dark:text-white text-black text-[18px] cursor-pointer"
                       onClick={() => {
-                        setCategories((prevCategory: any) =>
-                          prevCategory.filter((i: any) => i._id !== item._id)
+                        setCategories((prevCategory: Category[]) =>
+                          prevCategory.filter((_, idx) => idx !== index)
                         );
                       }}
                     />

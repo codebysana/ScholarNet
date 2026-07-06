@@ -10,17 +10,16 @@ import { useGetAllOrdersQuery } from "@/redux/features/orders/ordersApi";
 import { useGetAllUsersQuery } from "@/redux/features/user/userApi";
 import { AiOutlineMail } from "react-icons/ai";
 import { useEffect, useState } from "react";
-import CourseData from "../courses/CourseData";
 
 type Props = {
   isDashboard?: boolean;
 };
 
 const AllInvoices = ({ isDashboard }: Props) => {
-  const { theme, setTheme } = useTheme();
-  const { isLoading, data } = useGetAllOrdersQuery({});
-  const { data: userData } = useGetAllUsersQuery({});
-  const { data: coursesData } = useGetAllCoursesQuery({});
+  const { theme } = useTheme();
+  const { isLoading, data }: { isLoading: boolean; data?: any } = useGetAllOrdersQuery({});
+  const { data: userData }: { data?: any } = useGetAllUsersQuery({});
+  const { data: coursesData }: { data?: any } = useGetAllCoursesQuery({});
 
   const [orderData, setOrderData] = useState<any>([]);
 
@@ -168,7 +167,7 @@ const AllInvoices = ({ isDashboard }: Props) => {
               checkboxSelection={isDashboard ? false : true}
               rows={rows}
               columns={columns}
-              components={isDashboard ? {} : { Toolbar: GridToolbar }}
+              slots={isDashboard ? undefined : { toolbar: GridToolbar }}
             />
           </Box>
         </Box>

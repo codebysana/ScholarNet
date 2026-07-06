@@ -11,20 +11,78 @@ import {
 } from "@/redux/features/courses/coursesApi";
 import { redirect } from "next/navigation";
 import toast from "react-hot-toast";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 type Props = {
   id: string;
 };
 
+interface Course {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+  estimatedPrice: number;
+  tags: string;
+  level: string;
+  demoURL: string;
+  categories: string;
+  thumbnail: {
+    url: string;
+  };
+  benefits: { title: string }[];
+  prerequisites: { title: string }[];
+  courseData: {
+    videoUrl: string;
+    title: string;
+    description: string;
+    videoSection: string;
+    videoDuration: string;
+    links: {
+      title: string;
+      url: string;
+    }[];
+    suggestion: string;
+  }[];
+}
+
+interface EditCoursePayload {
+  name: string;
+  description: string;
+  price: number;
+  estimatedPrice: number;
+  tags: string;
+  thumbnail: string;
+  level: string;
+  demoURL: string;
+  totalVideos: number;
+  benefits: { title: string }[];
+  prerequisites: { title: string }[];
+  courseContent: {
+    videoUrl: string;
+    title: string;
+    description: string;
+    videoSection: string;
+    videoDuration: string;
+    links: {
+      title: string;
+      url: string;
+    }[];
+    suggestion: string;
+  }[];
+}
+
 const EditCourse: FC<Props> = ({ id }) => {
   const [editCourse, { isSuccess, error }] = useEditCourseMutation();
-  const { data, refetch } = useGetAllCoursesQuery(
+  const { data } = useGetAllCoursesQuery(
     {},
     { refetchOnMountOrArgChange: true }
   );
 
   const editCourseData =
-    data && data.allCourses?.find((i: any) => i._id === id);
+    (data as { allCourses?: Course[] } | undefined)?.allCourses?.find(
+      (i: Course) => i._id === id
+    );
   console.log(editCourseData);
 
   useEffect(() => {
@@ -33,9 +91,14 @@ const EditCourse: FC<Props> = ({ id }) => {
       redirect("/admin/all-courses");
     }
     if (error) {
-      if ("data" in error) {
-        const errorMessage = error as any;
-        toast.error(errorMessage.data.message);
+      const fetchError = error as FetchBaseQueryError;
+
+      if (
+        fetchError.data &&
+        typeof fetchError.data === "object" &&
+        "message" in fetchError.data
+      ) {
+        toast.error((fetchError.data as { message: string }).message);
       }
     }
   }, [isSuccess, error]);
@@ -44,21 +107,23 @@ const EditCourse: FC<Props> = ({ id }) => {
   const [courseInfo, setCourseInfo] = useState({
     name: "",
     description: "",
-    price: "",
-    estimatedPrice: "",
+    price: 0,
+    estimatedPrice: 0,
     tags: "",
     level: "",
-    demoUrl: "",
+    demoURL: "",
+    categories: "",
     thumbnail: "",
   });
   const [benefits, setBenefits] = useState([{ title: "" }]);
   const [prerequisites, setPrerequisites] = useState([{ title: "" }]);
   const [courseContentData, setCourseContentData] = useState([
     {
-      videoUrl: "",
       title: "",
       description: "",
+      videoUrl: "",
       videoSection: "Untitled Section",
+      videoDuration: "",
       links: [
         {
           title: "",
@@ -68,11 +133,26 @@ const EditCourse: FC<Props> = ({ id }) => {
       suggestion: "",
     },
   ]);
-  const [courseData, setCourseData] = useState({});
+  
+  const [courseData, setCourseData] = useState<EditCoursePayload>({
+    name: "",
+    description: "",
+    price: 0,
+    estimatedPrice: 0,
+    tags: "",
+    thumbnail: "",
+    level: "",
+    demoURL: "",
+    totalVideos: 0,
+    benefits: [],
+    prerequisites: [],
+    courseContent: [],
+  });
 
   console.log(courseData);
 
   useEffect(() => {
+    
     if (editCourseData) {
       setCourseInfo({
         name: editCourseData.name,
@@ -81,7 +161,8 @@ const EditCourse: FC<Props> = ({ id }) => {
         estimatedPrice: editCourseData?.estimatedPrice,
         tags: editCourseData.tags,
         level: editCourseData.level,
-        demoUrl: editCourseData.demoUrl,
+        demoURL: (editCourseData ).demoURL ?? editCourseData.demoURL ?? "",
+        categories: editCourseData?.categories ?? "",
         thumbnail: editCourseData?.thumbnail?.url,
       });
       setBenefits(editCourseData.benefits);
@@ -106,6 +187,7 @@ const EditCourse: FC<Props> = ({ id }) => {
         title: courseContent.title,
         description: courseContent.description,
         videoSection: courseContent.videoSection,
+        videoDuration: courseContent.videoDuration,
         links: courseContent.links.map((link) => ({
           title: link.title,
           url: link.url,
@@ -117,12 +199,12 @@ const EditCourse: FC<Props> = ({ id }) => {
     const data = {
       name: courseInfo.name,
       description: courseInfo.description,
-      price: courseInfo.price,
-      estimatedPrice: courseInfo.estimatedPrice,
+      price: Number(courseInfo.price),
+      estimatedPrice: Number(courseInfo.estimatedPrice),
       tags: courseInfo.tags,
       thumbnail: courseInfo.thumbnail,
       level: courseInfo.level,
-      demoUrl: courseInfo.demoUrl,
+      demoURL: courseInfo.demoURL,
       totalVideos: courseContentData.length,
       benefits: formattedBenefits,
       prerequisites: formattedPrerequisites,
@@ -132,7 +214,7 @@ const EditCourse: FC<Props> = ({ id }) => {
   };
 
   // console.log(courseData);
-  const handleCourseCreate = async (e: any) => {
+  const handleCourseCreate = async () => {
     const data = courseData;
     await editCourse({ id: editCourseData?._id, data });
   };
