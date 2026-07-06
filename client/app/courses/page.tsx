@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 import { useGetUsersAllCoursesQuery } from "@/redux/features/courses/coursesApi";
 import { useGetHeroDataQuery } from "@/redux/features/layout/layoutApi";
@@ -11,30 +10,51 @@ import { styles } from "../styles/style";
 import CourseCard from "../components/courses/CourseCard";
 import Footer from "../components/Footer";
 
-const page = () => {
+const Page = () => {
   const searchParams = useSearchParams();
   const search = searchParams?.get("title");
   const [route, setRoute] = useState("Login");
   const [open, setOpen] = useState(false);
-  const [courses, setCourses] = useState([]);
-  const [category, setCategory] = useState("All");
+ const [courses, setCourses] = useState<Course[]>([]);
+ const [category, setCategory] = useState<string>("All");
   const { data, isLoading } = useGetUsersAllCoursesQuery(undefined, {});
   const { data: categoriesData } = useGetHeroDataQuery("Categories", {});
 
+    type CourseData = {
+      [key: string]: unknown;
+    };
+
+  type Course = {
+    _id: string;
+    name: string;
+    categories: string;
+    ratings: number;
+    purchased: number;
+    price: number;
+    estimatedPrice: number;
+    courseData: CourseData[];
+    thumbnail: { url: string };
+    [key: string]: unknown;
+  };
+
+
   useEffect(() => {
     if (category === "All") {
-      setCourses(data?.courses);
+      setCourses((data as { courses?: Course[] } | undefined)?.courses ?? []);
     }
     if (category !== "All") {
       setCourses(
-        data?.courses?.filter((item: any) => item.categories === category)
+        (data as { courses?: Course[] } | undefined)?.courses?.filter(
+          (item: Course) => item.categories === category,
+        ) ?? []
       );
     }
     if (search) {
       setCourses(
-        data?.courses?.filter((item: any) =>
-          item.name.toLowerCase().includes(search.toLowerCase())
-        )
+        (data as { courses?: Course[] } | undefined)?.courses?.filter(
+          (item: Course) =>
+            item.name.toLowerCase().includes(search.toLowerCase())
+        ) ?? []
       );
     }
   }, [data, category, search]);
@@ -71,7 +91,7 @@ const page = () => {
                 All
               </div>
               {categories &&
-                categories.map((item: any, index: number) => (
+                categories.map((item: { title: string }, index: number) => (
                   <div key={index}>
                     <div
                       className={`h-[35px] ${
@@ -99,7 +119,7 @@ const page = () => {
             <br />
             <div className="grid grid-cols-1 gap-[20px] md:grid-cols-2 md:gap-[25px] lg:grid-cols-3 lg:gap-[25px] 1500px:grid-cols-4 1500px:gap-[25px]">
               {courses &&
-                courses.map((item: any, index: number) => (
+                courses.map((item: Course, index: number) => (
                   <CourseCard item={item} key={index} />
                 ))}
             </div>
@@ -111,4 +131,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

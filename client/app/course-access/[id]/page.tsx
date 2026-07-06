@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { redirect } from "next/navigation";
 import Loader from "@/app/components/loader/Loader";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
@@ -10,16 +10,15 @@ type Props = {
   params: { id: string };
 };
 
-const page = ({ params }: Props) => {
+const Page = ({ params }: Props) => {
   const { id } = params.id;
 
   const { data, isLoading, error } = useLoadUserQuery(undefined, {});
-  const [canAccess, setCanAccess] = useState(false);
 
   useEffect(() => {
     if (data) {
       const isPurchased = data.user?.courses?.find(
-        (item: any) => item._id === id
+        (item: { _id: string }) => item._id === id,
       );
       if (!isPurchased || error) {
         redirect("/");
@@ -43,4 +42,4 @@ const page = ({ params }: Props) => {
   );
 };
 
-export default page;
+export default Page;

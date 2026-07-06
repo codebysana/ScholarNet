@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 import React, { FC, useState } from "react";
 import Protected from "../hooks/useProtected";
@@ -8,13 +7,33 @@ import Profile from "../components/profile/Profile";
 import { useSelector } from "react-redux";
 import Footer from "../components/Footer";
 
-type Props = {};
+type Props = object;
 
-const page: FC<Props> = (props) => {
+type UserCourse = {
+  _id: string;
+};
+
+type User = {
+  courses: UserCourse[];
+  name?: string;
+  email?: string;
+  avatar?: { url?: string } | string | null;
+  role?: string;
+  [key: string]: unknown;
+};
+
+
+type RootState = {
+  auth: {
+    user: User | null;
+  };
+};
+
+const Page: FC<Props> = () => {
   const [open, setOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState(5);
+  const [activeItem] = useState(5);
   const [route, setRoute] = useState("Login");
-  const { user } = useSelector((state: any) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
   return (
     <div className="min-h-screen">
       <Protected>
@@ -30,11 +49,11 @@ const page: FC<Props> = (props) => {
           route={route}
           setRoute={setRoute}
         />
-        <Profile user={user} />
+        {user && <Profile user={user} />}
         <Footer />
       </Protected>
     </div>
   );
 };
 
-export default page;
+export default Page;

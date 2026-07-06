@@ -1,6 +1,6 @@
 import { styles } from "../styles/style";
 
-type Props = {};
+type Props = object;
 
 const Policy = ({}: Props) => {
   return (

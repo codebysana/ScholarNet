@@ -6,11 +6,11 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import FAQs from "../components/faqs/FAQs";
 
-type Props = {};
+type Props = object;
 
 const page = ({}: Props) => {
   const [open, setOpen] = useState(false);
-  const [activeItem, setAciveItem] = useState(4);
+  const [activeItem] = useState(4);
   const [route, setRoute] = useState("Login");
 
   return (
