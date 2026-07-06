@@ -7,9 +7,9 @@ import NavItems from "../utils/navItems";
 import ThemeSwitcher from "../utils/themeSwitcher";
 import { HiOutlineMenuAlt3, HiOutlineUserCircle } from "react-icons/hi";
 import CustomModal from "../utils/customModal";
-import Login from "../components/auth/login";
-import Signup from "../components/auth/signup";
-import Verification from "../components/auth/verification";
+import Login from "./auth/Login";
+import Signup from "./auth/Signup";
+import Verification from "./auth/Verification";
 import { useSelector } from "react-redux";
 import Image from "next/image";
 import avatar from "../../public/assets/avatar.jpg";
@@ -66,7 +66,7 @@ const Header: FC<Props> = ({ activeItem, open, setOpen, route, setRoute }) => {
         setLogout(true);
       }
     }
-  }, [data, userData, isLoading]);
+  }, [data, userData, isLoading, isSuccess, error, refetch, socialAuth]);
 
   if (typeof window !== "undefined") {
     window.addEventListener("scroll", () => {
