@@ -88,7 +88,7 @@ import { useGetHeroDataQuery } from "@/redux/features/layout/layoutApi";
 import Loader from "../loader/Loader";
 import { useRouter } from "next/navigation";
 
-type Props = {};
+type Props = object;
 
 const Hero: FC<Props> = () => {
   const [search, setSearch] = useState("");

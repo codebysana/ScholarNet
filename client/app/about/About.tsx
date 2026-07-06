@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 import { styles } from "../styles/style";
 
-type Props = {};
+type Props = object;
 
 const About = ({}: Props) => {
   return (

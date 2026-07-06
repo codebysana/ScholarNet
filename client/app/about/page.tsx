@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 import React, { useState } from "react";
 import Heading from "../utils/Heading";
@@ -6,11 +5,11 @@ import Header from "../components/Header";
 import About from "./About";
 import Footer from "../components/Footer";
 
-type Props = {};
+type Props = object;
 
-const page = ({}: Props) => {
+const Page = ({}: Props) => {
   const [open, setOpen] = useState(false);
-  const [activeItem, setAciveItem] = useState(2);
+  const [activeItem] = useState(2);
   const [route, setRoute] = useState("Login");
 
   return (
@@ -33,4 +32,4 @@ const page = ({}: Props) => {
   );
 };
 
-export default page;
+export default Page;

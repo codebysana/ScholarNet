@@ -8,7 +8,9 @@ import React, { FC, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { AiOutlineCamera } from "react-icons/ai";
 
-const EditHero: FC<Props> = (props: Props) => {
+type Props = object;
+
+const EditHero: FC<Props> = ({}: Props) => {
   const [image, setImage] = useState("");
   const [title, setTitle] = useState("");
   const [subTitle, setSubTitle] = useState("");
@@ -16,7 +18,7 @@ const EditHero: FC<Props> = (props: Props) => {
     refetchOnMountOrArgChange: true,
   });
 
-  const [editLayout, { isLoading, isSuccess, error }] = useEditLayoutMutation(
+  const [editLayout, { isSuccess, error }] = useEditLayoutMutation(
     {}
   );
 
@@ -33,19 +35,19 @@ const EditHero: FC<Props> = (props: Props) => {
     }
     if (error) {
       if ("data" in error) {
-        const errorData = error as any;
-        toast.error(errorData?.data?.message);
+        const errorData = error as { data?: { message?: string } };
+        toast.error(errorData?.data?.message || "Something went wrong");
       }
     }
-  }, [data, isSuccess, error]);
+  }, [data, isSuccess, error, refetch]);
 
-  const handleUpdate = (e: any) => {
+  const handleUpdate = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e: any) => {
+      reader.onload = (e: ProgressEvent<FileReader>) => {
         if (reader.readyState === 2) {
-          setImage(e.target.result as string);
+          setImage(e.target?.result as string);
         }
       };
       reader.readAsDataURL(file);

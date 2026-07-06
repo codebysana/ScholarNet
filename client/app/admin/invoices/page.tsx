@@ -1,12 +1,12 @@
 "use client";
 import React from "react";
-import Heading from "../../../app/utils/Heading";
+import Heading from "../../utils/Heading";
 import AdminSidebar from "../../components/admin/sidebar/AdminSidebar";
 import AllInvoices from "@/app/components/admin/order/AllInvoices";
 
-type Props = {};
+type Props = object;
 
-const page = ({}: Props) => {
+const Page = ({}: Props) => {
   return (
     <div>
       <Heading
@@ -26,4 +26,4 @@ const page = ({}: Props) => {
   );
 };
 
-export default page;
+export default Page;

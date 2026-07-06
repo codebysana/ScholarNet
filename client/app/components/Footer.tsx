@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-type Props = {};
+type Props = object;
 
 const Footer = ({}: Props) => {
   return (

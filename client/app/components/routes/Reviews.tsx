@@ -3,7 +3,8 @@ import { styles } from "@/app/styles/style";
 import Image from "next/image";
 import ReviewCard from "../Review/ReviewCard";
 
-type Props = {};
+type Props = object;
+
 export const reviews = [
   {
     name: "Gene Bates",
