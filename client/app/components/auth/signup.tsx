@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 import React, { FC, useEffect, useState } from "react";
 import { useFormik } from "formik";
@@ -13,6 +11,7 @@ import {
 import { styles } from "../../styles/style";
 import { useRegisterMutation } from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 
 type Props = {
   setRoute: (route: string) => void;
@@ -26,7 +25,7 @@ const schema = Yup.object().shape({
   password: Yup.string().required("Please enter your password!").min(6),
 });
 
-const signup: FC<Props> = ({ setRoute }) => {
+const Signup: FC<Props> = ({ setRoute }) => {
   const [show, setShow] = useState(false);
   const [register, { data, error, isSuccess }] = useRegisterMutation();
 
@@ -36,13 +35,18 @@ const signup: FC<Props> = ({ setRoute }) => {
       toast.success(message);
       setRoute("Verification");
     }
-    if (error) {
-      if ("data" in error) {
-        const errorData = error as any;
-        toast.error(errorData.data.message);
-      }
-    }
-  }, [isSuccess, error]);
+   if (error) {
+     const fetchError = error as FetchBaseQueryError;
+
+     if (
+       fetchError.data &&
+       typeof fetchError.data === "object" &&
+       "message" in fetchError.data
+     ) {
+       toast.error((fetchError.data as { message: string }).message);
+     }
+   }
+  }, [isSuccess, error, data, setRoute]);
 
   const formik = useFormik({
     initialValues: { name: "", email: "", password: "" },
@@ -154,4 +158,4 @@ const signup: FC<Props> = ({ setRoute }) => {
   );
 };
 
-export default signup;
+export default Signup;

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 import React, { FC, useEffect, useState } from "react";
 import { useFormik } from "formik";
@@ -13,11 +12,12 @@ import { styles } from "../../styles/style";
 import { useLoginMutation } from "@/redux/features/auth/authApi";
 import toast from "react-hot-toast";
 import { signIn } from "next-auth/react";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 
 type Props = {
   setRoute: (route: string) => void;
   setOpen: (open: boolean) => void;
-  refetch?: any;
+  refetch?: () => void;
 };
 
 const schema = Yup.object().shape({
@@ -27,7 +27,7 @@ const schema = Yup.object().shape({
   password: Yup.string().required("Please enter your password!").min(6),
 });
 
-const login: FC<Props> = ({ setRoute, setOpen, refetch }) => {
+const Login: FC<Props> = ({ setRoute, setOpen, refetch }) => {
   const [show, setShow] = useState(false);
   const [login, { isSuccess, error }] = useLoginMutation();
 
@@ -43,16 +43,21 @@ const login: FC<Props> = ({ setRoute, setOpen, refetch }) => {
     if (isSuccess) {
       toast.success("Login Successfully!");
       setOpen(false);
-      refetch();
+      refetch?.();
     }
 
-    if (error) {
-      if ("data" in error) {
-        const errorData = error as any;
-        toast.error(errorData.data.message);
-      }
-    }
-  }, [isSuccess, error]);
+     if (error) {
+       const fetchError = error as FetchBaseQueryError;
+
+       if (
+         fetchError.data &&
+         typeof fetchError.data === "object" &&
+         "message" in fetchError.data
+       ) {
+         toast.error((fetchError.data as { message: string }).message);
+       }
+     }
+  }, [isSuccess, error, setOpen, refetch]);
 
   const { errors, touched, values, handleChange, handleSubmit } = formik;
   return (
@@ -141,4 +146,4 @@ const login: FC<Props> = ({ setRoute, setOpen, refetch }) => {
   );
 };
 
-export default login;
+export default Login;

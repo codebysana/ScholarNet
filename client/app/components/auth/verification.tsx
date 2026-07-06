@@ -1,10 +1,10 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 import { useActivationMutation } from "../../../redux/features/auth/authApi";
-import { styles } from "../../../app/styles/style";
+import { styles } from "../../styles/style";
 import React, { FC, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { VscWorkspaceTrusted } from "react-icons/vsc";
 import { useSelector } from "react-redux";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
 
 type Props = {
   setRoute: (route: string) => void;
@@ -17,8 +17,8 @@ type VerifyNumber = {
   "3": string;
 };
 
-const verification: FC<Props> = ({ setRoute }) => {
-  const { token } = useSelector((state: any) => state.auth);
+const Verification: FC<Props> = ({ setRoute }) => {
+  const { token } = useSelector((state: { auth: { token: string } }) => state.auth);
   const [activation, { isSuccess, error }] = useActivationMutation();
   const [invalidError, setInvalidError] = useState<boolean>(false);
 
@@ -28,15 +28,17 @@ const verification: FC<Props> = ({ setRoute }) => {
       setRoute("Login");
     }
     if (error) {
-      if ("data" in error) {
-        const errorData = error as any;
-        toast.error(errorData.data.message);
-        setInvalidError(true);
-      } else {
-        console.log("An error occured", error);
+      const fetchError = error as FetchBaseQueryError;
+
+      if (
+        fetchError.data &&
+        typeof fetchError.data === "object" &&
+        "message" in fetchError.data
+      ) {
+        toast.error((fetchError.data as { message: string }).message);
       }
     }
-  }, [isSuccess, error]);
+  }, [isSuccess, error, setRoute]);
 
   const inputRefs = [
     useRef<HTMLInputElement>(null),
@@ -125,4 +127,4 @@ const verification: FC<Props> = ({ setRoute }) => {
   );
 };
 
-export default verification;
+export default Verification;
