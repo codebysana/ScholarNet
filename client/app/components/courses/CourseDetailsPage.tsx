@@ -10,16 +10,10 @@ import {
   useCreatePaymentIndentMutation,
   useGetStripePublishablekeyQuery,
 } from "@/redux/features/orders/ordersApi";
+import {Course} from "@/app/types/course";
 
 type Props = {
   id: string;
-};
-
-type Course = {
-  price: number;
-  name: string;
-  tags?: string | string[];
-  [key: string]: unknown;
 };
 
 const CourseDetailsPage = ({ id }: Props) => {
@@ -65,7 +59,7 @@ const CourseDetailsPage = ({ id }: Props) => {
               typeof course?.tags === "string"
                 ? course.tags
                 : Array.isArray(course?.tags)
-                ? course.tags.join(", ")
+                ? (course.tags as string[]).join(", ")
                 : ""
             }
           />

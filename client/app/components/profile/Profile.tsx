@@ -7,36 +7,10 @@ import ProfileInfo from "./ProfileInfo";
 import ChangePassword from "./ChangePassword";
 import CourseCard from "../courses/CourseCard";
 import { useGetUsersAllCoursesQuery } from "@/redux/features/courses/coursesApi";
-
-type UserCourse = {
-  _id: string;
-};
-
-type User = {
-  courses: UserCourse[];
-  name?: string;
-  email?: string;
-  avatar?: { url?: string } | string | null;
-  role?: string;
-  [key: string]: unknown;
-};
-
-type Course = {
-  _id: string;
-  name: string;
-  ratings: number;
-  purchased: number;
-  price: number;
-  estimatedPrice: number;
-  courseData: unknown[];
-  thumbnail: {
-    url: string;
-  }
-  [key: string]: unknown;
-};
+import { UserCourseData, CourseDetails } from "@/app/types/course";
 
 type Props = {
-  user: User;
+  user: UserCourseData;
 };
 
 const Profile: FC<Props> = ({ user }) => {
@@ -44,14 +18,14 @@ const Profile: FC<Props> = ({ user }) => {
   const [active, setActive] = useState(1);
   const [avatar] = useState<string | null>(null);
   const [logout, setLogout] = useState(false);
-  const [courses, setCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<CourseDetails[]>([]);
 
   const {} = useLogoutQuery(undefined, {
     skip: !logout ? true : false,
   });
 
   const queryResult = useGetUsersAllCoursesQuery(undefined, {});
-  const data = queryResult.data as { courses: Course[] } | undefined;
+  const data = queryResult.data as { courses: CourseDetails[] } | undefined;
 
   const logoutHandler = async () => {
     setLogout(true);
@@ -70,9 +44,9 @@ const Profile: FC<Props> = ({ user }) => {
     if (data && Array.isArray(data.courses)) {
       const filteredCourses = user.courses
         .map((userCourse) =>
-          data.courses.find((course: Course) => course._id === userCourse._id)
+          data.courses.find((course: CourseDetails) => course._id === userCourse._id)
         )
-        .filter((course): course is Course => course !== undefined);
+        .filter((course): course is CourseDetails => course !== undefined);
       setCourses(filteredCourses);
     }
   }, [data, user]);

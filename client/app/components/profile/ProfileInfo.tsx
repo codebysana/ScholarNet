@@ -9,23 +9,11 @@ import React, { FC, useEffect, useState } from "react";
 import { AiOutlineCamera } from "react-icons/ai";
 import avatarIcon from "../../../public/assets/avatar.jpg";
 import toast from "react-hot-toast";
-
-type UserCourse = {
-  _id: string;
-};
-
-type User = {
-  courses: UserCourse[];
-  name?: string;
-  email?: string;
-  avatar?: { url?: string } | string | null;
-  role?: string;
-  [key: string]: unknown;
-};
+import {  UserCourseData } from "@/app/types/course";
 
 type Props = {
   avatar: string | null;
-  user: User;
+  user: UserCourseData;
 };
 
 const ProfileInfo: FC<Props> = ({ user, avatar }) => {

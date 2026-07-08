@@ -26,7 +26,7 @@ export interface CourseContent {
 
 
 type Props = {
-  data: Course & Record<string,unknown>;
+  data: Course;
   stripePromise: Promise<Stripe | null>;
   clientSecret: string;
   setRoute: React.Dispatch<React.SetStateAction<string>>;
@@ -279,7 +279,7 @@ const CourseDetails = ({
               <div className="w-full">
                 {stripePromise && clientSecret && user && (
                   <Elements stripe={stripePromise} options={{ clientSecret }}>
-                    <CheckoutForm setOpen={setOpen} data={data} user={user as User & Record<string,unknown>} />
+                    <CheckoutForm setOpen={setOpen} data={data} user={user as User} />
                   </Elements>
                 )}
               </div>

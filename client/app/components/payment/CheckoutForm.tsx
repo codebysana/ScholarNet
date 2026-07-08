@@ -12,21 +12,12 @@ import { redirect } from "next/navigation";
 import { useEffect, useState, Dispatch, SetStateAction } from "react";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
+import { Course, User } from "@/app/types/course";
 const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
 const socketId = io(ENDPOINT, {
   transports: ["websocket"],
 });
 
-type Course = {
-  _id: string;
-  name: string;
-  [key: string]: unknown;
-};
-
-type User = {
-  _id: string;
-  [key: string]: unknown;
-};
 
 type Props = {
   data: Course;

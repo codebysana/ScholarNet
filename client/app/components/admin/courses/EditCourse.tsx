@@ -161,9 +161,9 @@ const EditCourse: FC<Props> = ({ id }) => {
         estimatedPrice: editCourseData?.estimatedPrice,
         tags: editCourseData.tags,
         level: editCourseData.level,
-        demoURL: (editCourseData ).demoURL ?? editCourseData.demoURL ?? "",
+        demoURL: editCourseData.demoURL ?? "",
         categories: editCourseData?.categories ?? "",
-        thumbnail: editCourseData?.thumbnail?.url,
+        thumbnail: editCourseData?.thumbnail?.url ?? "",
       });
       setBenefits(editCourseData.benefits);
       setPrerequisites(editCourseData.prerequisites);
@@ -215,8 +215,12 @@ const EditCourse: FC<Props> = ({ id }) => {
 
   // console.log(courseData);
   const handleCourseCreate = async () => {
+    if (!editCourseData?._id) {
+      toast.error("Course data not loaded yet. Please try again.");
+      return;
+    }
     const data = courseData;
-    await editCourse({ id: editCourseData?._id, data });
+    await editCourse({ id: editCourseData._id, data });
   };
   return (
     <div className="w-full flex min-h-screen bg-[#0D1422]">

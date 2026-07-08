@@ -6,22 +6,10 @@ import { AiOutlineLogout } from "react-icons/ai";
 import { MdOutlineAdminPanelSettings } from "react-icons/md";
 import Link from "next/link";
 import avatarIcon from "../../../public/assets/avatar.jpg";
-
-type UserCourse = {
-  _id: string;
-};
-
-type User = {
-  courses: UserCourse[];
-  name?: string;
-  email?: string;
-  avatar?: { url?: string } | string | null;
-  role?: string;
-  [key: string]: unknown;
-};
+import {  UserCourseData } from "@/app/types/course";
 
 type Props = {
-  user: User;
+  user: UserCourseData;
   active: number;
   avatar: string | null;
   setActive: (active: number) => void;
