@@ -28,7 +28,7 @@ const socketId = io(ENDPOINT, {
 });
 import {
   User,
-  Link,
+  CourseLink as Link,
   Question,
   QuestionReply,
   Review,

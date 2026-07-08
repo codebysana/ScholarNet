@@ -12,7 +12,7 @@ import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Image from "next/image";
 import { VscVerifiedFilled } from "react-icons/vsc";
 import { Stripe } from "@stripe/stripe-js";
-import { User, Benefit, Course, Prerequisite, Review, ReviewReply } from "@/app/types/course";
+import { User, Benefit, CourseLink, Course, Prerequisite, Review, ReviewReply } from "@/app/types/course";
 
 export interface CourseContent {
   _id: string;
@@ -21,12 +21,12 @@ export interface CourseContent {
   videoDuration: number;
   description: string;
   videoUrl: string;
-  links: Link[];
+  links: CourseLink[];
 }
 
 
 type Props = {
-  data: Course & Record<string, any>;
+  data: Course & Record<string,unknown>;
   stripePromise: Promise<Stripe | null>;
   clientSecret: string;
   setRoute: React.Dispatch<React.SetStateAction<string>>;
@@ -46,11 +46,12 @@ const CourseDetails = ({
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    setUser(userData?.user);
+    setUser(userData?.user ?? null);
   }, [userData]);
 
   const discountPercentage =
-    ((data?.estimatedPrice - data.price) / data?.estimatedPrice) * 100;
+    data?.estimatedPrice && data.estimatedPrice > 0
+      ? ((data.estimatedPrice - data.price) / data.estimatedPrice) * 100 : 0;
 
   const discountPercentagePrice = discountPercentage.toFixed(0);
 
@@ -153,13 +154,13 @@ const CourseDetails = ({
                   </h5>
                 </div>
                 <br />
-                {(data?.reviews && [...data.reviews].reverse()).map(
+                {(data?.reviews && [...data.reviews].reverse())?.map(
                   (item: Review, index: number) => (
                     <div className="w-full pb-4" key={index}>
                       <div className="flex">
                         <div className="w-[50px] h-[50px]">
                           <Image
-                            src={item.user.avatar ? item.user.avatar.url : ""}
+                            src={item.user.avatar ? item.user.avatar.url : "./assets/avatar.jpg"}
                             width={50}
                             height={50}
                             alt=""
@@ -187,11 +188,11 @@ const CourseDetails = ({
                           <Ratings rating={item.rating} />
                         </div>
                       </div>
-                      {item.commentReplies.map((reply: ReviewReply) => (
+                      {item.commentReplies?.map((reply: ReviewReply) => (
                         <div className="w-full flex 800px:ml-16 my-5" key={reply._id}>
                           <div className="w-[50px] h-[50px]">
                             <Image
-                              src={reply.user.avatar ? reply.user.avatar.url : ""}
+                              src={reply.user.avatar ? reply.user.avatar.url : "./assets/avatar.jpg"}
                               width={50}
                               height={50}
                               alt=""
@@ -278,7 +279,7 @@ const CourseDetails = ({
               <div className="w-full">
                 {stripePromise && clientSecret && user && (
                   <Elements stripe={stripePromise} options={{ clientSecret }}>
-                    <CheckoutForm setOpen={setOpen} data={data} user={user} />
+                    <CheckoutForm setOpen={setOpen} data={data} user={user as User & Record<string,unknown>} />
                   </Elements>
                 )}
               </div>
