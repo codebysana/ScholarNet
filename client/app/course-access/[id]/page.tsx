@@ -11,13 +11,13 @@ type Props = {
 };
 
 const Page = ({ params }: Props) => {
-  const { id } = params.id;
+  const { id } = params;
 
   const { data, isLoading, error } = useLoadUserQuery(undefined, {});
 
   useEffect(() => {
     if (data) {
-      const isPurchased = data.user?.courses?.find(
+      const isPurchased = data.user?.allCourses?.find(
         (item: { _id: string }) => item._id === id,
       );
       if (!isPurchased || error) {
@@ -33,11 +33,11 @@ const Page = ({ params }: Props) => {
     <>
       {isLoading ? (
         <Loader />
-      ) : (
+      ) : data?.user ? (
         <div>
           <CourseContent id={id} user={data.user} />
         </div>
-      )}
+      ) : null}
     </>
   );
 };
