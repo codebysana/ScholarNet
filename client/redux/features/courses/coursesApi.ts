@@ -1,9 +1,9 @@
 import { apiSlice } from "../api/apiSlice";
 
 export const courseApi = apiSlice.injectEndpoints({
-  endpoints: (builder: any) => ({
+  endpoints: (builder) => ({
     createCourse: builder.mutation({
-      query: (data: any) => ({
+      query: (data) => ({
         url: "create-course",
         method: "POST",
         body: data,
@@ -25,13 +25,13 @@ export const courseApi = apiSlice.injectEndpoints({
       }),
     }),
     editCourse: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `edit-course/${id}`,
-        method: "PUT",
-        body: data,
-        credentials: "include" as const,
+      query: ({ id, data }: { id: string; data: any }) => ({
+      url: `edit-course/${id}`,
+      method: "PUT",
+      body: data,
+      credentials: "include" as const,
       }),
-    }),
+  }),
     getUsersAllCourses: builder.query({
       query: () => ({
         url: "get-courses",
@@ -47,14 +47,14 @@ export const courseApi = apiSlice.injectEndpoints({
       }),
     }),
     getCourseContent: builder.query({
-      query: (id) => ({
+      query: (id: string) => ({
         url: `get-course-content/${id}`,
         method: "GET",
         credentials: "include" as const,
       }),
     }),
     addNewQuestion: builder.mutation({
-      query: ({ question, courseId, contentId }) => ({
+      query: ({ question, courseId, contentId }: { question: string; courseId: string; contentId: string }) => ({
         url: "add-question",
         body: {
           question,
@@ -83,7 +83,7 @@ export const courseApi = apiSlice.injectEndpoints({
         url: `add-review/${courseId}`,
         method: "POST",
         body: { review, rating, courseId },
-        credentials: "include " as const,
+        credentials: "include" as const,
       }),
     }),
     addReplyInReview: builder.mutation({

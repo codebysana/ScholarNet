@@ -7,6 +7,7 @@ export interface User {
   allCourses?: {
     _id: string;
   }[];
+  [key: string]: unknown;
 }
 
 export interface Avatar {
@@ -93,3 +94,30 @@ export interface Course {
 export interface CourseDetailsResponse {
   course: Course;
 }
+
+export interface UserCourse {
+  _id: string;
+}
+
+export interface UserCourseData {
+  courses: UserCourse[];
+  name?: string;
+  email?: string;
+  avatar?: { url?: string } | string | null;
+  role?: string;
+  [key: string]: unknown;
+};
+
+export interface CourseDetails {
+  _id: string;
+  name: string;
+  ratings: number;
+  purchased: number;
+  price: number;
+  estimatedPrice: number;
+  courseData: unknown[];
+  thumbnail: {
+    url: string;
+  }
+  [key: string]: unknown;
+};
