@@ -3,26 +3,17 @@ export interface User {
   name: string;
   email: string;
   role: string;
-  avatar?: {
-    url: string;
-  };
-}
-
-export interface Avatar {
-  url: string;
-}
-
-export interface User {
-  _id: string;
-  name: string;
   avatar?: Avatar;
   allCourses?: {
     _id: string;
   }[];
 }
 
+export interface Avatar {
+  url: string;
+}
 
-export interface Link {
+export interface CourseLink {
   title: string;
   url: string;
 }
@@ -52,7 +43,7 @@ export interface CourseContent {
   title: string;
   description: string;
   videoUrl: string;
-  links: Link[];
+  links: CourseLink[];
   questions: Question[];
   tags?: string;
   videoSection: string;
