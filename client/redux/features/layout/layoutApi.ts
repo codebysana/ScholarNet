@@ -4,14 +4,14 @@ export const layoutApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getHeroData: builder.query({
       query: (type) => ({
-        url: `get-layout/${type}`,
+        url: `layout/get-layout/${type}`,
         method: "GET",
         credentials: "include" as const,
       }),
     }),
     editLayout: builder.mutation({
       query: ({ type, image, title, subtitle, faqs, categories }) => ({
-        url: `edit-layout`,
+        url: `layout/edit-layout`,
         body: {
           type,
           image,
