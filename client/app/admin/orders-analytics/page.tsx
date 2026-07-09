@@ -1,12 +1,12 @@
 "use client";
-import React from "react";
+import React, { use } from "react";
 import Heading from "@/app/utils/Heading";
 import AdminSidebar from "@/app/components/admin/sidebar/AdminSidebar";
 import DashboardHeader from "@/app/components/admin/DashboardHeader";
 import OrderAnalytics from "@/app/components/admin/analytics/OrderAnalytics";
 
-const Page = ({ params }: { params: { id?: string } }) => {
-  const id = params?.id;
+const Page = ({ params }: { params: Promise<{ id: string }> }) => {
+  const { id } = use(params);
   console.log("id", id);
   return (
     <div>

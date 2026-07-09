@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
+import { use, useEffect } from "react";
 import { redirect } from "next/navigation";
 import Loader from "@/app/components/loader/Loader";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import CourseContent from "../../components/courses/CourseContent";
 
 type Props = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 const Page = ({ params }: Props) => {
-  const { id } = params;
+  const { id } = use(params);
 
   const { data, isLoading, error } = useLoadUserQuery(undefined, {});
 

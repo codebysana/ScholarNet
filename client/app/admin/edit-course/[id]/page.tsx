@@ -1,12 +1,12 @@
 "use client";
-import React from "react";
+import React, { use } from "react";
 import AdminSidebar from "../../../components/admin/sidebar/AdminSidebar";
 import Heading from "../../../utils/Heading";
 import DashboardHeader from "../../../components/admin/DashboardHeader";
 import EditCourse from "../../../components/admin/courses/EditCourse";
 
-const Page = ({ params }: { params: { id: string } }) => {
-  const id = params?.id;
+const Page = ({ params }: { params: Promise<{ id: string }> }) => {
+  const { id } = use(params);
   return (
     <div>
       <Heading
