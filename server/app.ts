@@ -22,7 +22,15 @@ app.use(cookieParser());
 
 // cors - cross origin resource sharing
 // app.use(cors({ origin: process.env.ORIGIN }));
-app.use(cors({ origin: ["http://localhost:3000"], credentials: true }));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      process.env.ORIGIN || "https://scholar-net-beryl.vercel.app",
+    ],
+    credentials: true,
+  }),
+);
 
 // Rate Limiter
 const limiter = rateLimit({
@@ -41,6 +49,12 @@ app.use("/api/v1/notification", notificationRouter);
 app.use("/api/v1/analytics", analyticsRouter);
 app.use("/api/v1/layout", layoutRouter);
 
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "ScholarNet Backend Running",
+  });
+});
 
 // testing api
 app.get("/test", (req: Request, res: Response, next: NextFunction) => {
